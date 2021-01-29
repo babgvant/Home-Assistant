@@ -28,7 +28,7 @@ blueprint:
         entity:
           domain: camera      
 
-  source_url: 
+  source_url: https://github.com/babgvant/Home-Assistant/raw/main/doorbell_notify_google.yaml
 
 mode: single
 
