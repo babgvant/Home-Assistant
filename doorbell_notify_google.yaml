@@ -1,0 +1,53 @@
+blueprint:
+  name: Doorbell - Notify Google
+  description: 'Make an announcement over Google devices when the doorbell is pushed.'
+
+  domain: automation
+  input:
+    doorbell:
+      name: Doorbell
+      description: This is the doorbell binary sensor
+      selector:
+        entity:
+          domain: binary_sensor
+    google_device:
+      name: Google
+      description: The Google device to make the announcement on. Make a comma seperated list to announce on multiple devices.
+      selector:
+        entity:
+          domain: media_player
+      default: ""
+    message:
+      name: Message (Optional)
+      description: 'Default: "There is Somebody at the Door!"'
+      default: There is Somebody at the Door
+    camera:
+      name: Camera
+      description: The camera which creates the snapshot
+      selector:
+        entity:
+          domain: camera      
+
+  source_url: 
+
+mode: single
+
+trigger:
+- platform: state
+  entity_id: !input 'doorbell'
+  from: "off"
+  to: "on"
+
+variables:
+  camera: !input camera
+  delay: !input delay
+
+action:
+  - service: tts.google_translate_say
+    data:
+      entity_id:
+        - !input 'google_device'
+      message: !input message
+
+  - delay: "{{ delay }}"
+
