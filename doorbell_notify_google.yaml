@@ -48,6 +48,3 @@ action:
       entity_id:
         - !input 'google_device'
       message: !input message
-
-  - delay: "{{ delay }}"
-
