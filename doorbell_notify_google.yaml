@@ -40,7 +40,6 @@ trigger:
 
 variables:
   camera: !input camera
-  delay: !input delay
 
 action:
   - service: tts.google_translate_say
