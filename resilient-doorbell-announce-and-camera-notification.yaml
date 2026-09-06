@@ -1,0 +1,202 @@
+blueprint:
+  name: Resilient Doorbell Announcement and Camera Notification
+  author: Local fork based on the Seamus65 doorbell blueprint
+  description: >-
+    Announces a doorbell press through a current Home Assistant TTS entity and
+    sends a camera image to a Companion App device. Announcement and mobile
+    notification run independently, so a failure in one does not suppress the
+    other. The default Android camera-proxy mode needs no folders, file paths,
+    or allowlist configuration. A saved media snapshot mode is available for
+    Android and iOS.
+  domain: automation
+  homeassistant:
+    min_version: 2024.6.0
+  input:
+    required:
+      name: Required settings
+      icon: mdi:doorbell-video
+      input:
+        doorbell:
+          name: Doorbell sensor
+          description: Binary sensor that turns on when the doorbell is pressed.
+          selector:
+            entity:
+              filter:
+                - domain: binary_sensor
+        camera:
+          name: Camera
+          description: Camera used for the notification image.
+          selector:
+            entity:
+              filter:
+                - domain: camera
+        notify_device:
+          name: Companion App device
+          description: Phone or tablet running the Home Assistant Companion App.
+          selector:
+            device:
+              filter:
+                - integration: mobile_app
+        tts_entity:
+          name: TTS provider
+          description: Select your Google Translate or other TTS entity.
+          selector:
+            entity:
+              filter:
+                - domain: tts
+        google_device:
+          name: Announcement speaker
+          description: Media player that should announce the doorbell press.
+          selector:
+            entity:
+              multiple: true
+              filter:
+                - domain: media_player
+
+    messages:
+      name: Messages
+      icon: mdi:message-text
+      collapsed: true
+      input:
+        message:
+          name: Announcement
+          default: There is somebody at the front door.
+          selector:
+            text:
+              multiline: false
+        notification_title:
+          name: Notification title
+          default: Someone is at the front door
+          selector:
+            text:
+              multiline: false
+        notification_message:
+          name: Notification message
+          default: The doorbell was pressed.
+          selector:
+            text:
+              multiline: false
+
+    behavior:
+      name: Behavior
+      icon: mdi:cog
+      collapsed: true
+      input:
+        attachment_mode:
+          name: Image method
+          description: >-
+            Camera proxy is the zero-configuration choice for Android. Saved
+            media snapshot works on Android and iOS and stores one replaceable
+            JPEG in Home Assistant's media directory.
+          default: camera_proxy
+          selector:
+            select:
+              mode: dropdown
+              options:
+                - label: Camera proxy (Android, recommended)
+                  value: camera_proxy
+                - label: Saved media snapshot (Android or iOS)
+                  value: media_snapshot
+        snapshot_delay:
+          name: Delay before image capture
+          description: Allows the visitor time to move into the camera frame.
+          default: 1
+          selector:
+            number:
+              min: 0
+              max: 30
+              step: 1
+              unit_of_measurement: seconds
+              mode: slider
+        cooldown:
+          name: Duplicate-press cooldown
+          description: Ignore repeated doorbell events for this many seconds.
+          default: 5
+          selector:
+            number:
+              min: 0
+              max: 60
+              step: 1
+              unit_of_measurement: seconds
+              mode: slider
+        notification_tag:
+          name: Notification tag
+          description: Replaces an earlier doorbell notification instead of stacking duplicates.
+          default: front-doorbell
+          selector:
+            text:
+              multiline: false
+
+triggers:
+  - trigger: state
+    entity_id: !input doorbell
+    from: "off"
+    to: "on"
+
+variables:
+  camera_entity: !input camera
+  tts_provider: !input tts_entity
+  speaker_entities: !input google_device
+  attachment_mode_value: !input attachment_mode
+  notification_title_value: !input notification_title
+  notification_message_value: !input notification_message
+  notification_tag_value: !input notification_tag
+  snapshot_file: "/media/doorbell_{{ camera_entity | replace('.', '_') }}.jpg"
+  snapshot_url: >-
+    /media/local/doorbell_{{ camera_entity | replace('.', '_') }}.jpg?v={{ context.id }}
+  camera_proxy_url: "/api/camera_proxy/{{ camera_entity }}"
+
+actions:
+  - parallel:
+      - sequence:
+          - action: tts.speak
+            target:
+              entity_id: "{{ tts_provider }}"
+            data:
+              media_player_entity_id: "{{ speaker_entities }}"
+              message: !input message
+              cache: true
+            continue_on_error: true
+
+      - sequence:
+          - delay:
+              seconds: !input snapshot_delay
+
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ attachment_mode_value == 'media_snapshot' }}"
+                sequence:
+                  - action: camera.snapshot
+                    target:
+                      entity_id: "{{ camera_entity }}"
+                    data:
+                      filename: "{{ snapshot_file }}"
+                    continue_on_error: true
+
+                  - device_id: !input notify_device
+                    domain: mobile_app
+                    type: notify
+                    title: "{{ notification_title_value }}"
+                    message: "{{ notification_message_value }}"
+                    data:
+                      image: "{{ snapshot_url }}"
+                      tag: "{{ notification_tag_value }}"
+                    continue_on_error: true
+
+            default:
+              - device_id: !input notify_device
+                domain: mobile_app
+                type: notify
+                title: "{{ notification_title_value }}"
+                message: "{{ notification_message_value }}"
+                data:
+                  image: "{{ camera_proxy_url }}"
+                  tag: "{{ notification_tag_value }}"
+                continue_on_error: true
+
+  - delay:
+      seconds: !input cooldown
+
+mode: single
+max_exceeded: silent

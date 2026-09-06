@@ -1,0 +1,371 @@
+title: HVAC
+views:
+  - title: Overview
+    path: overview
+    icon: mdi:home-thermometer-outline
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Main Floor
+          - type: thermostat
+            entity: climate.main_floor
+            name: Main Floor
+            grid_options:
+              columns: 6
+              rows: 3
+          - type: tile
+            entity: sensor.main_floor_temperature
+            name: Thermostat
+            vertical: false
+          - type: tile
+            entity: sensor.living_room_temperature
+            name: Living Room
+            vertical: false
+          - type: tile
+            entity: sensor.guest_room_temperature
+            name: Guest Room
+            vertical: false
+          - type: tile
+            entity: sensor.main_floor_air_quality_index
+            name: Ecobee Air Quality
+            vertical: false
+          - type: tile
+            entity: sensor.main_floor_humidity
+            name: Humidity
+            vertical: false
+          - type: tile
+            entity: sensor.main_floor_carbon_dioxide
+            name: Ecobee CO2
+            vertical: false
+          - type: tile
+            entity: binary_sensor.main_floor_occupancy
+            name: Thermostat Occupancy
+            vertical: false
+          - type: tile
+            entity: binary_sensor.living_room_occupancy
+            name: Living Room Occupancy
+            vertical: false
+          - type: tile
+            entity: binary_sensor.guest_room_occupancy
+            name: Guest Room Occupancy
+            vertical: false
+      - type: grid
+        cards:
+          - type: heading
+            heading: Upstairs
+          - type: thermostat
+            entity: climate.upstairs
+            name: Upstairs
+            grid_options:
+              columns: 6
+              rows: 3
+          - type: tile
+            entity: sensor.upstairs_temperature
+            name: Thermostat
+            vertical: false
+          - type: tile
+            entity: sensor.upstairs_humidity
+            name: Humidity
+            vertical: false
+          - type: tile
+            entity: binary_sensor.upstairs_occupancy
+            name: Occupancy
+            vertical: false
+          - type: tile
+            entity: sensor.upstairs_air_quality_index
+            name: Ecobee Air Quality
+            vertical: false
+          - type: tile
+            entity: sensor.upstairs_carbon_dioxide
+            name: Ecobee CO2
+            vertical: false
+      - type: grid
+        cards:
+          - type: heading
+            heading: CERV Indoor Air
+          - type: tile
+            entity: sensor.p_base_operating_mode
+            name: Operating Mode
+            vertical: false
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: gauge
+            entity: sensor.p_base_co2
+            name: CERV CO2
+            min: 400
+            max: 1500
+            needle: true
+            severity:
+              green: 400
+              yellow: 800
+              red: 1000
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: gauge
+            entity: sensor.p_base_indoor_humidity
+            name: Indoor Humidity
+            min: 20
+            max: 80
+            needle: true
+            severity:
+              green: 30
+              yellow: 60
+              red: 70
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: tile
+            entity: sensor.p_base_indoor_temperature
+            name: Indoor Temperature
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_indoor_voc
+            name: Indoor VOC
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_indoor_pm10
+            name: Indoor PM10
+            vertical: false
+          - type: tile
+            entity: binary_sensor.p_base_air_purification
+            name: Air Purification
+            vertical: false
+          - type: tile
+            entity: binary_sensor.p_base_ventilating
+            name: Ventilating
+            vertical: false
+          - type: tile
+            entity: binary_sensor.p_base_economizer
+            name: Economizer
+            vertical: false
+      - type: grid
+        cards:
+          - type: heading
+            heading: CERV Controls
+          - type: thermostat
+            entity: climate.global_p_base
+            name: CERV
+            grid_options:
+              columns: 6
+              rows: 3
+          - type: button
+            entity: button.p_base_start_15_minute_ventilation
+            name: Ventilate 15 Minutes
+            icon: mdi:fan-clock
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.p_base_start_15_minute_ventilation
+            grid_options:
+              columns: 3
+              rows: 2
+          - type: button
+            entity: button.p_base_stop_triggered_ventilation
+            name: Stop Ventilation
+            icon: mdi:fan-off
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.p_base_stop_triggered_ventilation
+              confirmation:
+                text: Stop the active triggered-ventilation cycle?
+            grid_options:
+              columns: 3
+              rows: 2
+          - type: tile
+            entity: sensor.p_base_fan_1_speed
+            name: Fan 1
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_fan_2_speed
+            name: Fan 2
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_triggered_ventilation_remaining
+            name: Ventilation Remaining
+            vertical: false
+          - type: tile
+            entity: binary_sensor.p_base_scheduled_ventilation
+            name: Scheduled Ventilation
+            vertical: false
+          - type: tile
+            entity: binary_sensor.p_base_ventilation_due_to_co2
+            name: CO2 Trigger
+            vertical: false
+          - type: tile
+            entity: binary_sensor.p_base_outdoor_particulate_defense
+            name: Particle Defense
+            vertical: false
+          - type: tile
+            entity: binary_sensor.p_base_outdoor_voc_defense
+            name: VOC Defense
+            vertical: false
+  - title: Air Quality
+    path: air-quality
+    icon: mdi:air-filter
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: CERV Setpoints and Status
+          - type: entities
+            title: Setpoints
+            show_header_toggle: false
+            entities:
+              - entity: sensor.p_base_co2_setpoint
+                name: CO2 Setpoint
+              - entity: sensor.p_base_voc_setpoint
+                name: VOC Setpoint
+              - entity: sensor.p_base_heating_setpoint
+                name: Heating Setpoint
+              - entity: sensor.p_base_cooling_setpoint
+                name: Cooling Setpoint
+              - entity: sensor.p_base_normal_fan_speed
+                name: Normal Fan Speed
+              - entity: sensor.p_base_purification_fan_speed
+                name: Purification Fan Speed
+              - entity: sensor.p_base_triggered_ventilation_fan_speed
+                name: Triggered Ventilation Fan Speed
+          - type: entities
+            title: Ventilation Reasons
+            show_header_toggle: false
+            entities:
+              - binary_sensor.p_base_triggered_ventilation
+              - binary_sensor.p_base_external_ventilation_switch
+              - binary_sensor.p_base_ventilation_due_to_co2
+              - binary_sensor.p_base_ventilation_due_to_indoor_particle_count
+              - binary_sensor.p_base_ventilation_due_to_indoor_pm
+              - binary_sensor.p_base_ventilation_due_to_indoor_voc
+              - binary_sensor.p_base_scheduling
+      - type: grid
+        cards:
+          - type: heading
+            heading: Indoor vs Outdoor
+          - type: entities
+            title: Indoor
+            show_header_toggle: false
+            entities:
+              - sensor.p_base_indoor_temperature
+              - sensor.p_base_indoor_humidity
+              - sensor.p_base_co2
+              - sensor.p_base_indoor_voc
+              - sensor.p_base_indoor_pm10
+              - sensor.p_base_indoor_pc0_3
+          - type: entities
+            title: Outdoor
+            show_header_toggle: false
+            entities:
+              - sensor.p_base_outdoor_temperature
+              - sensor.p_base_outdoor_humidity
+              - sensor.p_base_outdoor_voc
+              - sensor.p_base_outdoor_pm10
+              - sensor.p_base_outdoor_pc0_3
+      - type: grid
+        cards:
+          - type: heading
+            heading: Ecobee Air Quality
+          - type: entities
+            title: Main Floor
+            show_header_toggle: false
+            entities:
+              - sensor.main_floor_temperature
+              - sensor.main_floor_humidity
+              - sensor.main_floor_carbon_dioxide
+              - sensor.main_floor_volatile_organic_compounds
+              - sensor.main_floor_air_quality_index
+          - type: entities
+            title: Upstairs
+            show_header_toggle: false
+            entities:
+              - sensor.upstairs_temperature
+              - sensor.upstairs_humidity
+              - sensor.upstairs_carbon_dioxide
+              - sensor.upstairs_volatile_organic_compounds
+              - sensor.upstairs_air_quality_index
+  - title: History
+    path: history
+    icon: mdi:chart-line
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Temperature
+          - type: history-graph
+            title: Indoor Temperatures - 24 Hours
+            hours_to_show: 24
+            entities:
+              - entity: sensor.main_floor_temperature
+                name: Main Floor
+              - entity: sensor.living_room_temperature
+                name: Living Room
+              - entity: sensor.guest_room_temperature
+                name: Guest Room
+              - entity: sensor.upstairs_temperature
+                name: Upstairs
+              - entity: sensor.p_base_indoor_temperature
+                name: CERV Indoor
+              - entity: sensor.p_base_outdoor_temperature
+                name: CERV Outdoor
+            grid_options:
+              columns: 12
+              rows: 6
+      - type: grid
+        cards:
+          - type: heading
+            heading: Humidity and CO2
+          - type: history-graph
+            title: Relative Humidity - 24 Hours
+            hours_to_show: 24
+            entities:
+              - entity: sensor.main_floor_humidity
+                name: Main Floor
+              - entity: sensor.upstairs_humidity
+                name: Upstairs
+              - entity: sensor.p_base_indoor_humidity
+                name: CERV Indoor
+              - entity: sensor.p_base_outdoor_humidity
+                name: CERV Outdoor
+            grid_options:
+              columns: 12
+              rows: 5
+          - type: history-graph
+            title: CO2 - 24 Hours
+            hours_to_show: 24
+            entities:
+              - entity: sensor.p_base_co2
+                name: CERV
+              - entity: sensor.main_floor_carbon_dioxide
+                name: Main Floor Ecobee
+              - entity: sensor.upstairs_carbon_dioxide
+                name: Upstairs Ecobee
+            grid_options:
+              columns: 12
+              rows: 5
+          - type: history-graph
+            title: CERV Air Quality - 24 Hours
+            hours_to_show: 24
+            entities:
+              - entity: sensor.p_base_indoor_voc
+                name: Indoor VOC
+              - entity: sensor.p_base_outdoor_voc
+                name: Outdoor VOC
+              - entity: sensor.p_base_indoor_pm10
+                name: Indoor PM10
+              - entity: sensor.p_base_outdoor_pm10
+                name: Outdoor PM10
+            grid_options:
+              columns: 12
+              rows: 5
