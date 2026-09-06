@@ -1,0 +1,574 @@
+title: Solar & Storage
+views:
+  - title: Overview
+    path: overview
+    icon: mdi:solar-power-variant
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Energy Flow
+            icon: mdi:transmission-tower
+          - type: energy-distribution
+            link_dashboard: true
+            grid_options: {columns: 12, rows: 5}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Discover HELIOS Bank
+            icon: mdi:battery-high
+          - type: gauge
+            entity: sensor.p_base_state_of_charge
+            name: State of Charge
+            min: 0
+            max: 100
+            needle: true
+            severity: {red: 0, yellow: 40, green: 55}
+            grid_options: {columns: 6, rows: auto}
+          - type: tile
+            entity: sensor.p_base_power_2
+            name: Battery Power
+            icon: mdi:battery-sync
+            vertical: true
+            grid_options: {columns: 6, rows: 3}
+          - type: tile
+            entity: device_tracker.lynk_ii
+            name: LYNK II Network
+            icon: mdi:lan-connect
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_battery_count
+            name: Batteries Online
+            icon: mdi:battery-multiple
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_alarm_count
+            name: Active Alarms
+            icon: mdi:alert-circle-outline
+            color: red
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_lifetime_charge
+            name: Lifetime Charge
+            icon: mdi:battery-arrow-up
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_lifetime_discharge
+            name: Lifetime Discharge
+            icon: mdi:battery-arrow-down
+            vertical: false
+          - type: markdown
+            content: >-
+              **96 kWh HELIOS bank.** Yellow begins at the **40% operating
+              reserve**. Negative battery power means charging; positive means
+              discharging.
+            grid_options: {columns: 12, rows: 2}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Current Power
+            icon: mdi:flash
+          - type: tile
+            entity: sensor.solark_pv_power
+            name: Solar
+            icon: mdi:solar-power-variant
+            color: amber
+            vertical: false
+          - type: tile
+            entity: sensor.solark_load_power
+            name: Home
+            icon: mdi:home-lightning-bolt
+            color: blue
+            vertical: false
+          - type: tile
+            entity: sensor.solark_grid_power_net
+            name: Grid Net
+            icon: mdi:transmission-tower
+            color: purple
+            vertical: false
+          - type: tile
+            entity: sensor.p_base_power_2
+            name: Battery
+            icon: mdi:battery-charging
+            color: green
+            vertical: false
+          - type: tile
+            entity: sensor.solark_grid_import_power
+            name: Grid Import
+            icon: mdi:transmission-tower-import
+            color: red
+            vertical: false
+          - type: tile
+            entity: sensor.solark_grid_export_power
+            name: Grid Export
+            icon: mdi:transmission-tower-export
+            color: green
+            vertical: false
+
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Power — Last 24 Hours
+            icon: mdi:chart-line
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - {entity: sensor.solark_pv_power, name: Solar}
+              - {entity: sensor.solark_load_power, name: Home}
+              - {entity: sensor.solark_grid_power_net, name: Grid Net}
+              - {entity: sensor.p_base_power_2, name: HELIOS Bank}
+            grid_options: {columns: 12, rows: 5}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Production
+            icon: mdi:solar-panel-large
+          - type: tile
+            entity: sensor.solark_energy_today
+            name: Solar Energy Today
+            icon: mdi:solar-power-variant
+            color: amber
+            vertical: false
+          - type: tile
+            entity: sensor.solark_energy_total
+            name: Lifetime Solar Energy
+            icon: mdi:counter
+            color: amber
+            vertical: false
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery SOC — Last 24 Hours
+            icon: mdi:battery-clock
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - {entity: sensor.p_base_state_of_charge, name: State of Charge}
+            grid_options: {columns: 12, rows: 4}
+
+      - type: grid
+        column_span: 4
+        cards:
+          - type: heading
+            heading: HELIOS Battery Health
+            icon: mdi:battery-heart-variant
+          - type: entities
+            title: Battery 2460061
+            state_color: true
+            show_header_toggle: false
+            entities:
+              - {entity: sensor.battery_dlphd48b252460061_state_of_charge, name: SOC}
+              - {entity: sensor.battery_dlphd48b252460061_battery_temperature, name: Battery Temp}
+              - {entity: sensor.battery_dlphd48b252460061_bms_temperature, name: BMS Temp}
+              - {entity: sensor.battery_dlphd48b252460061_terminal_voltage, name: Voltage}
+              - {entity: sensor.battery_dlphd48b252460061_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252460061_cell_spread, name: Cell Spread}
+              - {entity: binary_sensor.battery_dlphd48b252460061_fault_or_warning, name: Fault / Warning}
+            grid_options: {columns: 4, rows: 5}
+          - type: entities
+            title: Battery 2460084
+            state_color: true
+            show_header_toggle: false
+            entities:
+              - {entity: sensor.battery_dlphd48b252460084_state_of_charge, name: SOC}
+              - {entity: sensor.battery_dlphd48b252460084_battery_temperature, name: Battery Temp}
+              - {entity: sensor.battery_dlphd48b252460084_bms_temperature, name: BMS Temp}
+              - {entity: sensor.battery_dlphd48b252460084_terminal_voltage, name: Voltage}
+              - {entity: sensor.battery_dlphd48b252460084_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252460084_cell_spread, name: Cell Spread}
+              - {entity: binary_sensor.battery_dlphd48b252460084_fault_or_warning, name: Fault / Warning}
+            grid_options: {columns: 4, rows: 5}
+          - type: entities
+            title: Battery 2460095
+            state_color: true
+            show_header_toggle: false
+            entities:
+              - {entity: sensor.battery_dlphd48b252460095_state_of_charge, name: SOC}
+              - {entity: sensor.battery_dlphd48b252460095_battery_temperature, name: Battery Temp}
+              - {entity: sensor.battery_dlphd48b252460095_bms_temperature, name: BMS Temp}
+              - {entity: sensor.battery_dlphd48b252460095_terminal_voltage, name: Voltage}
+              - {entity: sensor.battery_dlphd48b252460095_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252460095_cell_spread, name: Cell Spread}
+              - {entity: binary_sensor.battery_dlphd48b252460095_fault_or_warning, name: Fault / Warning}
+            grid_options: {columns: 4, rows: 5}
+          - type: entities
+            title: Battery 2460100
+            state_color: true
+            show_header_toggle: false
+            entities:
+              - {entity: sensor.battery_dlphd48b252460100_state_of_charge, name: SOC}
+              - {entity: sensor.battery_dlphd48b252460100_battery_temperature, name: Battery Temp}
+              - {entity: sensor.battery_dlphd48b252460100_bms_temperature, name: BMS Temp}
+              - {entity: sensor.battery_dlphd48b252460100_terminal_voltage, name: Voltage}
+              - {entity: sensor.battery_dlphd48b252460100_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252460100_cell_spread, name: Cell Spread}
+              - {entity: binary_sensor.battery_dlphd48b252460100_fault_or_warning, name: Fault / Warning}
+            grid_options: {columns: 4, rows: 5}
+          - type: entities
+            title: Battery 2550243
+            state_color: true
+            show_header_toggle: false
+            entities:
+              - {entity: sensor.battery_dlphd48b252550243_state_of_charge, name: SOC}
+              - {entity: sensor.battery_dlphd48b252550243_battery_temperature, name: Battery Temp}
+              - {entity: sensor.battery_dlphd48b252550243_bms_temperature, name: BMS Temp}
+              - {entity: sensor.battery_dlphd48b252550243_terminal_voltage, name: Voltage}
+              - {entity: sensor.battery_dlphd48b252550243_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252550243_cell_spread, name: Cell Spread}
+              - {entity: binary_sensor.battery_dlphd48b252550243_fault_or_warning, name: Fault / Warning}
+            grid_options: {columns: 4, rows: 5}
+          - type: entities
+            title: Battery 2550244
+            state_color: true
+            show_header_toggle: false
+            entities:
+              - {entity: sensor.battery_dlphd48b252550244_state_of_charge, name: SOC}
+              - {entity: sensor.battery_dlphd48b252550244_battery_temperature, name: Battery Temp}
+              - {entity: sensor.battery_dlphd48b252550244_bms_temperature, name: BMS Temp}
+              - {entity: sensor.battery_dlphd48b252550244_terminal_voltage, name: Voltage}
+              - {entity: sensor.battery_dlphd48b252550244_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252550244_cell_spread, name: Cell Spread}
+              - {entity: binary_sensor.battery_dlphd48b252550244_fault_or_warning, name: Fault / Warning}
+            grid_options: {columns: 4, rows: 5}
+
+  - title: Energy
+    path: energy
+    icon: mdi:chart-areaspline
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        column_span: 3
+        cards:
+          - type: energy-date-selection
+            grid_options: {columns: 12, rows: 1}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Solar Production
+            icon: mdi:solar-panel-large
+          - type: energy-solar-graph
+            grid_options: {columns: 12, rows: 5}
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Sources and Loads
+            icon: mdi:home-lightning-bolt-outline
+          - type: energy-usage-graph
+            grid_options: {columns: 12, rows: 5}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Sol-Ark Production
+            icon: mdi:solar-power
+          - type: tile
+            entity: sensor.solark_energy_today
+            name: Today
+            color: amber
+            vertical: false
+          - type: tile
+            entity: sensor.solark_energy_total
+            name: Lifetime
+            color: amber
+            vertical: false
+      - type: grid
+        cards:
+          - type: heading
+            heading: Energy Summary
+            icon: mdi:gauge
+          - type: energy-self-sufficiency-gauge
+            grid_options: {columns: 6, rows: 3}
+          - type: energy-grid-neutrality-gauge
+            grid_options: {columns: 6, rows: 3}
+          - type: energy-sources-table
+            types: [grid, solar, battery]
+            grid_options: {columns: 12, rows: 4}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Energy Devices
+            icon: mdi:meter-electric-outline
+          - type: energy-devices-graph
+            max_devices: 10
+            grid_options: {columns: 12, rows: 5}
+
+  - title: Batteries
+    path: batteries
+    icon: mdi:battery-multiple
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery 2460061
+            icon: mdi:battery
+          - type: gauge
+            entity: sensor.battery_dlphd48b252460061_state_of_charge
+            name: State of Charge
+            min: 0
+            max: 100
+            needle: true
+            severity: {red: 0, yellow: 40, green: 55}
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - {entity: binary_sensor.battery_dlphd48b252460061_fault_or_warning, name: Fault or Warning}
+              - {entity: sensor.battery_dlphd48b252460061_battery_temperature, name: Battery Temperature}
+              - {entity: sensor.battery_dlphd48b252460061_bms_temperature, name: BMS Temperature}
+              - {entity: sensor.battery_dlphd48b252460061_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252460061_terminal_voltage, name: Terminal Voltage}
+              - {entity: sensor.battery_dlphd48b252460061_cell_average_voltage, name: Cell Average}
+              - {entity: sensor.battery_dlphd48b252460061_cell_minimum_voltage, name: Cell Minimum}
+              - {entity: sensor.battery_dlphd48b252460061_cell_maximum_voltage, name: Cell Maximum}
+              - {entity: sensor.battery_dlphd48b252460061_cell_spread, name: Cell Spread}
+              - {entity: sensor.battery_dlphd48b252460061_installed_capacity, name: Installed Capacity}
+              - {entity: sensor.battery_dlphd48b252460061_lifetime_charge, name: Lifetime Charge}
+              - {entity: sensor.battery_dlphd48b252460061_lifetime_discharge, name: Lifetime Discharge}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery 2460084
+            icon: mdi:battery
+          - type: gauge
+            entity: sensor.battery_dlphd48b252460084_state_of_charge
+            name: State of Charge
+            min: 0
+            max: 100
+            needle: true
+            severity: {red: 0, yellow: 40, green: 55}
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - {entity: binary_sensor.battery_dlphd48b252460084_fault_or_warning, name: Fault or Warning}
+              - {entity: sensor.battery_dlphd48b252460084_battery_temperature, name: Battery Temperature}
+              - {entity: sensor.battery_dlphd48b252460084_bms_temperature, name: BMS Temperature}
+              - {entity: sensor.battery_dlphd48b252460084_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252460084_terminal_voltage, name: Terminal Voltage}
+              - {entity: sensor.battery_dlphd48b252460084_cell_average_voltage, name: Cell Average}
+              - {entity: sensor.battery_dlphd48b252460084_cell_minimum_voltage, name: Cell Minimum}
+              - {entity: sensor.battery_dlphd48b252460084_cell_maximum_voltage, name: Cell Maximum}
+              - {entity: sensor.battery_dlphd48b252460084_cell_spread, name: Cell Spread}
+              - {entity: sensor.battery_dlphd48b252460084_installed_capacity, name: Installed Capacity}
+              - {entity: sensor.battery_dlphd48b252460084_lifetime_charge, name: Lifetime Charge}
+              - {entity: sensor.battery_dlphd48b252460084_lifetime_discharge, name: Lifetime Discharge}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery 2460095
+            icon: mdi:battery
+          - type: gauge
+            entity: sensor.battery_dlphd48b252460095_state_of_charge
+            name: State of Charge
+            min: 0
+            max: 100
+            needle: true
+            severity: {red: 0, yellow: 40, green: 55}
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - {entity: binary_sensor.battery_dlphd48b252460095_fault_or_warning, name: Fault or Warning}
+              - {entity: sensor.battery_dlphd48b252460095_battery_temperature, name: Battery Temperature}
+              - {entity: sensor.battery_dlphd48b252460095_bms_temperature, name: BMS Temperature}
+              - {entity: sensor.battery_dlphd48b252460095_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252460095_terminal_voltage, name: Terminal Voltage}
+              - {entity: sensor.battery_dlphd48b252460095_cell_average_voltage, name: Cell Average}
+              - {entity: sensor.battery_dlphd48b252460095_cell_minimum_voltage, name: Cell Minimum}
+              - {entity: sensor.battery_dlphd48b252460095_cell_maximum_voltage, name: Cell Maximum}
+              - {entity: sensor.battery_dlphd48b252460095_cell_spread, name: Cell Spread}
+              - {entity: sensor.battery_dlphd48b252460095_installed_capacity, name: Installed Capacity}
+              - {entity: sensor.battery_dlphd48b252460095_lifetime_charge, name: Lifetime Charge}
+              - {entity: sensor.battery_dlphd48b252460095_lifetime_discharge, name: Lifetime Discharge}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery 2460100
+            icon: mdi:battery
+          - type: gauge
+            entity: sensor.battery_dlphd48b252460100_state_of_charge
+            name: State of Charge
+            min: 0
+            max: 100
+            needle: true
+            severity: {red: 0, yellow: 40, green: 55}
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - {entity: binary_sensor.battery_dlphd48b252460100_fault_or_warning, name: Fault or Warning}
+              - {entity: sensor.battery_dlphd48b252460100_battery_temperature, name: Battery Temperature}
+              - {entity: sensor.battery_dlphd48b252460100_bms_temperature, name: BMS Temperature}
+              - {entity: sensor.battery_dlphd48b252460100_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252460100_terminal_voltage, name: Terminal Voltage}
+              - {entity: sensor.battery_dlphd48b252460100_cell_average_voltage, name: Cell Average}
+              - {entity: sensor.battery_dlphd48b252460100_cell_minimum_voltage, name: Cell Minimum}
+              - {entity: sensor.battery_dlphd48b252460100_cell_maximum_voltage, name: Cell Maximum}
+              - {entity: sensor.battery_dlphd48b252460100_cell_spread, name: Cell Spread}
+              - {entity: sensor.battery_dlphd48b252460100_installed_capacity, name: Installed Capacity}
+              - {entity: sensor.battery_dlphd48b252460100_lifetime_charge, name: Lifetime Charge}
+              - {entity: sensor.battery_dlphd48b252460100_lifetime_discharge, name: Lifetime Discharge}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery 2550243
+            icon: mdi:battery
+          - type: gauge
+            entity: sensor.battery_dlphd48b252550243_state_of_charge
+            name: State of Charge
+            min: 0
+            max: 100
+            needle: true
+            severity: {red: 0, yellow: 40, green: 55}
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - {entity: binary_sensor.battery_dlphd48b252550243_fault_or_warning, name: Fault or Warning}
+              - {entity: sensor.battery_dlphd48b252550243_battery_temperature, name: Battery Temperature}
+              - {entity: sensor.battery_dlphd48b252550243_bms_temperature, name: BMS Temperature}
+              - {entity: sensor.battery_dlphd48b252550243_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252550243_terminal_voltage, name: Terminal Voltage}
+              - {entity: sensor.battery_dlphd48b252550243_cell_average_voltage, name: Cell Average}
+              - {entity: sensor.battery_dlphd48b252550243_cell_minimum_voltage, name: Cell Minimum}
+              - {entity: sensor.battery_dlphd48b252550243_cell_maximum_voltage, name: Cell Maximum}
+              - {entity: sensor.battery_dlphd48b252550243_cell_spread, name: Cell Spread}
+              - {entity: sensor.battery_dlphd48b252550243_installed_capacity, name: Installed Capacity}
+              - {entity: sensor.battery_dlphd48b252550243_lifetime_charge, name: Lifetime Charge}
+              - {entity: sensor.battery_dlphd48b252550243_lifetime_discharge, name: Lifetime Discharge}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery 2550244
+            icon: mdi:battery
+          - type: gauge
+            entity: sensor.battery_dlphd48b252550244_state_of_charge
+            name: State of Charge
+            min: 0
+            max: 100
+            needle: true
+            severity: {red: 0, yellow: 40, green: 55}
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - {entity: binary_sensor.battery_dlphd48b252550244_fault_or_warning, name: Fault or Warning}
+              - {entity: sensor.battery_dlphd48b252550244_battery_temperature, name: Battery Temperature}
+              - {entity: sensor.battery_dlphd48b252550244_bms_temperature, name: BMS Temperature}
+              - {entity: sensor.battery_dlphd48b252550244_current, name: Current}
+              - {entity: sensor.battery_dlphd48b252550244_terminal_voltage, name: Terminal Voltage}
+              - {entity: sensor.battery_dlphd48b252550244_cell_average_voltage, name: Cell Average}
+              - {entity: sensor.battery_dlphd48b252550244_cell_minimum_voltage, name: Cell Minimum}
+              - {entity: sensor.battery_dlphd48b252550244_cell_maximum_voltage, name: Cell Maximum}
+              - {entity: sensor.battery_dlphd48b252550244_cell_spread, name: Cell Spread}
+              - {entity: sensor.battery_dlphd48b252550244_installed_capacity, name: Installed Capacity}
+              - {entity: sensor.battery_dlphd48b252550244_lifetime_charge, name: Lifetime Charge}
+              - {entity: sensor.battery_dlphd48b252550244_lifetime_discharge, name: Lifetime Discharge}
+
+  - title: System
+    path: system
+    icon: mdi:solar-power
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Plant Status
+            icon: mdi:solar-power
+          - type: tile
+            entity: device_tracker.sol_ark_1
+            name: Sol-Ark #1 Network
+            icon: mdi:lan-connect
+            vertical: false
+          - type: tile
+            entity: device_tracker.eese_d200_e4ak24c06502_lan
+            name: Sol-Ark #2 Network
+            icon: mdi:lan-connect
+            vertical: false
+          - type: tile
+            entity: device_tracker.eese_d200_e4ak24c02364_lan
+            name: Sol-Ark #3 Network
+            icon: mdi:lan-connect
+            vertical: false
+          - type: tile
+            entity: update.solark_cloud_update
+            name: Sol-Ark Integration
+            icon: mdi:cloud-sync-outline
+            vertical: false
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: HELIOS / LYNK II
+            icon: mdi:battery-heart-variant
+          - type: gauge
+            entity: sensor.p_base_state_of_charge
+            name: State of Charge
+            min: 0
+            max: 100
+            needle: true
+            severity: {red: 0, yellow: 40, green: 55}
+            grid_options: {columns: 6, rows: auto}
+          - type: tile
+            entity: sensor.p_base_power_2
+            name: Charge / Discharge
+            icon: mdi:battery-sync
+            vertical: true
+            grid_options: {columns: 6, rows: 3}
+          - type: tile
+            entity: device_tracker.lynk_ii
+            name: LYNK II Network
+            icon: mdi:lan-connect
+            vertical: false
+          - type: tile
+            entity: update.discover_energy_lynk_cloud_update
+            name: LYNK Cloud Integration
+            icon: mdi:update
+            vertical: false
+          - type: markdown
+            content: >-
+              Bank SOC and power are reported directly by Discover LYNK Cloud.
+              The Sol-Ark-reported SOC is retained below only for comparison.
+            grid_options: {columns: 12, rows: 2}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Data Health
+            icon: mdi:heart-pulse
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.solark_pv_power
+                name: Solar data
+                secondary_info: last-updated
+              - entity: sensor.solark_load_power
+                name: Load data
+                secondary_info: last-updated
+              - entity: sensor.solark_grid_power_net
+                name: Grid data
+                secondary_info: last-updated
+              - entity: sensor.p_base_state_of_charge
+                name: Battery data
+                secondary_info: last-updated
+              - entity: sensor.solark_battery_soc
+                name: Sol-Ark SOC comparison
+                secondary_info: last-updated
+            grid_options: {columns: 12, rows: 5}
+          - type: markdown
+            content: >-
+              Sol-Ark Cloud telemetry normally updates in approximately
+              five-minute steps. Network presence comes from UniFi and does not
+              prove that inverter or LYNK telemetry is healthy.
+            grid_options: {columns: 12, rows: 2}
