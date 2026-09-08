@@ -143,7 +143,7 @@ variables:
   notification_tag_value: !input notification_tag
   snapshot_file: "/media/doorbell_{{ camera_entity | replace('.', '_') }}.jpg"
   snapshot_url: >-
-    /media/local/doorbell_{{ camera_entity | replace('.', '_') }}.jpg?v={{ context.id }}
+    /media/local/doorbell_{{ camera_entity | replace('.', '_') }}.jpg?v={{ as_timestamp(now()) | int }}
   camera_proxy_url: "/api/camera_proxy/{{ camera_entity }}"
 
 actions:
