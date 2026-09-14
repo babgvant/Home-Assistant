@@ -1,0 +1,62 @@
+alias: SP63CE - Outdoor Lighting Schedule
+description: >
+  Turn SP63CE on 30 minutes before sunset and off 30 minutes after
+  sunrise. Reconcile after HA restarts and periodically.
+mode: single
+
+triggers:
+  - trigger: sun
+    event: sunset
+    offset: "-00:30:00"
+
+  - trigger: sun
+    event: sunrise
+    offset: "00:30:00"
+
+  - trigger: homeassistant
+    event: start
+
+  - trigger: time_pattern
+    minutes: "/10"
+
+conditions: []
+
+actions:
+  - choose:
+      # Night window: 30 minutes before sunset through
+      # 30 minutes after sunrise.
+      - conditions:
+          - condition: sun
+            after: sunset
+            after_offset: "-00:30:00"
+            before: sunrise
+            before_offset: "00:30:00"
+
+          # Only issue the command when the entity is available and off.
+          - condition: state
+            entity_id: light.sp63ce_strip
+            state: "off"
+
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.sp63ce_strip
+
+      # Day window: 30 minutes after sunrise through
+      # 30 minutes before sunset.
+      - conditions:
+          - condition: sun
+            after: sunrise
+            after_offset: "00:30:00"
+            before: sunset
+            before_offset: "-00:30:00"
+
+          # Only issue the command when the entity is available and on.
+          - condition: state
+            entity_id: light.sp63ce_strip
+            state: "on"
+
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.sp63ce_strip
