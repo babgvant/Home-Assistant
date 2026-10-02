@@ -1,4 +1,4 @@
-title: Solar & Storage
+# title: Solar & Storage
 views:
   - title: Overview
     path: overview
@@ -12,77 +12,87 @@ views:
           - type: heading
             heading: Energy Flow
             icon: mdi:transmission-tower
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: heading
+            heading: Current Power
+            icon: mdi:flash
+            grid_options:
+              columns: 12
+              rows: 1
           - type: energy-distribution
             link_dashboard: true
             grid_options:
               columns: 12
+              rows: auto
+          - type: grid
+            columns: 2
+            square: false
+            grid_options:
+              columns: 12
               rows: 5
-      - type: grid
-        column_span: 1
-        cards:
-          - type: heading
-            heading: Current Power
-            icon: mdi:flash
-          - type: tile
-            entity: sensor.solark_pv_power
-            name: Solar
-            icon: mdi:solar-power-variant
-            color: amber
-            vertical: false
-          - type: tile
-            entity: sensor.solark_load_power
-            name: Home
-            icon: mdi:home-lightning-bolt
-            color: blue
-            vertical: false
-          - type: tile
-            entity: sensor.solark_grid_power_net
-            name: Grid Net
-            icon: mdi:transmission-tower
-            color: purple
-            vertical: false
-          - type: tile
-            entity: sensor.solark_battery_power
-            name: Battery Net
-            icon: mdi:battery-charging
-            color: green
-            vertical: false
-          - type: tile
-            entity: sensor.solark_grid_import_power
-            name: Grid Import
-            icon: mdi:transmission-tower-import
-            color: red
-            vertical: false
-          - type: tile
-            entity: sensor.solark_grid_export_power
-            name: Grid Export
-            icon: mdi:transmission-tower-export
-            color: green
-            vertical: false
-          - type: tile
-            entity: sensor.global_p_house_battery_charge_power
-            name: Battery Charge
-            icon: mdi:battery-arrow-up
-            color: green
-            vertical: false
-          - type: tile
-            entity: sensor.global_p_house_battery_discharge_power
-            name: Battery Discharge
-            icon: mdi:battery-arrow-down
-            color: orange
-            vertical: false
-          - type: tile
-            entity: sensor.global_p_house_smart_load_power
-            name: Smart Load
-            icon: mdi:power-socket-us
-            color: cyan
-            vertical: false
-          - type: tile
-            entity: sensor.global_p_house_generator_power
-            name: Generator
-            icon: mdi:engine
-            color: deep-orange
-            vertical: false
+            cards:
+              - type: tile
+                entity: sensor.solark_pv_power
+                name: Solar
+                icon: mdi:solar-power-variant
+                color: amber
+                vertical: false
+              - type: tile
+                entity: sensor.solark_load_power
+                name: Home
+                icon: mdi:home-lightning-bolt
+                color: blue
+                vertical: false
+              - type: tile
+                entity: sensor.solark_grid_power_net
+                name: Grid Net
+                icon: mdi:transmission-tower
+                color: purple
+                vertical: false
+              - type: tile
+                entity: sensor.solark_battery_power
+                name: Battery Net
+                icon: mdi:battery-charging
+                color: green
+                vertical: false
+              - type: tile
+                entity: sensor.solark_grid_import_power
+                name: Grid Import
+                icon: mdi:transmission-tower-import
+                color: red
+                vertical: false
+              - type: tile
+                entity: sensor.solark_grid_export_power
+                name: Grid Export
+                icon: mdi:transmission-tower-export
+                color: green
+                vertical: false
+              - type: tile
+                entity: sensor.global_p_house_battery_charge_power
+                name: Battery Charge
+                icon: mdi:battery-arrow-up
+                color: green
+                vertical: false
+              - type: tile
+                entity: sensor.global_p_house_battery_discharge_power
+                name: Battery Discharge
+                icon: mdi:battery-arrow-down
+                color: orange
+                vertical: false
+              - type: tile
+                entity: sensor.global_p_house_smart_load_power
+                name: Smart Load
+                icon: mdi:power-socket-us
+                color: cyan
+                vertical: false
+              - type: tile
+                entity: sensor.global_p_house_generator_power
+                name: Generator
+                icon: mdi:engine
+                color: deep-orange
+                vertical: false
       - type: grid
         column_span: 2
         cards:
@@ -190,7 +200,7 @@ views:
             color: amber
             vertical: false
       - type: grid
-        column_span: 2
+        column_span: 1
         cards:
           - type: heading
             heading: Power — Last 24 Hours
@@ -211,9 +221,6 @@ views:
             grid_options:
               columns: 12
               rows: 4
-      - type: grid
-        column_span: 1
-        cards:
           - type: heading
             heading: Battery SOC — Last 24 Hours
             icon: mdi:battery-clock
@@ -377,6 +384,345 @@ views:
               columns: 12
               rows: 1
       - type: grid
+        column_span: 3
+        cards:
+          - type: heading
+            heading: ComEd Electricity Price & Grid Cost
+            icon: mdi:chart-line
+          - type: custom:apexcharts-card
+            section_mode: true
+            header:
+              show: true
+              title: Today
+              show_states: false
+            graph_span: 24h
+            span:
+              start: day
+            update_interval: 1min
+            all_series_config:
+              type: line
+              curve: straight
+              stroke_width: 2
+              float_precision: 3
+              unit: USD/kWh
+              extend_to: false
+              show:
+                legend_value: false
+            yaxis:
+            - decimals: 3
+              apex_config:
+                labels:
+                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) : ''—''; }'
+                title:
+                  text: USD/kWh
+            apex_config:
+              chart:
+                toolbar:
+                  show: false
+                animations:
+                  enabled: false
+              legend:
+                show: true
+                position: bottom
+                showForSingleSeries: true
+              tooltip:
+                shared: true
+                intersect: false
+                y:
+                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) + '' USD/kWh'' : ''—''; }'
+              markers:
+                size: 0
+              annotations:
+                yaxis:
+                - y: 0
+                  borderColor: '#808080'
+                  strokeDashArray: 3
+            series:
+            - entity: sensor.comed_fast_price
+              name: 5-Minute Market Mean
+              color: '#4285f4'
+              statistics:
+                type: mean
+                period: 5minute
+                align: start
+              stroke_dash: 0
+            - entity: sensor.comed_fast_price
+              name: 5-Minute Market Peak
+              color: '#ab47bc'
+              statistics:
+                type: max
+                period: 5minute
+                align: start
+              stroke_dash: 4
+            - entity: sensor.comed_actual_grid_price
+              name: Estimated Grid Price
+              color: '#ff9800'
+              statistics:
+                type: max
+                period: 5minute
+                align: start
+              stroke_dash: 0
+            grid_options:
+              columns: 36
+              rows: 6
+          - type: grid
+            columns: 4
+            square: false
+            cards:
+            - type: markdown
+              content: '**Current 5-Minute Price**
+
+
+                {% set value = states(''sensor.comed_fast_price'') %}
+
+                {% if is_number(value) %}
+
+                ## {{ ''%.3f'' | format(value | float) }} USD/kWh
+
+                {% else %}
+
+                ## Unavailable
+
+                {% endif %}'
+            - type: markdown
+              content: '**Current Hour Average**
+
+
+                {% set value = states(''sensor.comed_electricity_price'') %}
+
+                {% if is_number(value) %}
+
+                ## {{ ''%.3f'' | format(value | float) }} USD/kWh
+
+                {% else %}
+
+                ## Unavailable
+
+                {% endif %}'
+            - type: markdown
+              content: '**Current Grid Price (Estimated)**
+
+
+                {% set value = states(''sensor.comed_actual_grid_price'') %}
+
+                {% if is_number(value) %}
+
+                ## {{ ''%.3f'' | format(value | float) }} USD/kWh
+
+                {% else %}
+
+                ## Unavailable
+
+                {% endif %}'
+            - type: custom:apexcharts-card
+              header:
+                show: true
+                title: Today Market Peak
+                show_states: true
+                colorize_states: true
+              graph_span: 24h
+              span:
+                start: day
+              update_interval: 1min
+              series:
+              - entity: sensor.comed_fast_price
+                name: Market Peak
+                color: '#ab47bc'
+                unit: USD/kWh
+                float_precision: 3
+                statistics:
+                  type: max
+                  period: day
+                  align: start
+                extend_to: false
+                show:
+                  name_in_header: false
+                  legend_value: false
+              apex_config:
+                chart:
+                  height: 24
+                  sparkline:
+                    enabled: true
+                legend:
+                  show: false
+                tooltip:
+                  enabled: false
+                markers:
+                  size: 0
+                stroke:
+                  width: 0
+            grid_options:
+              columns: 36
+              rows: 2
+          - type: custom:apexcharts-card
+            section_mode: true
+            header:
+              show: true
+              title: Last 7 Days
+              show_states: false
+            graph_span: 7d
+            span:
+              end: day
+            update_interval: 1min
+            all_series_config:
+              type: line
+              curve: straight
+              stroke_width: 2
+              float_precision: 3
+              unit: USD/kWh
+              extend_to: false
+              show:
+                legend_value: false
+            yaxis:
+            - decimals: 3
+              apex_config:
+                labels:
+                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) : ''—''; }'
+                title:
+                  text: USD/kWh
+            apex_config:
+              chart:
+                toolbar:
+                  show: false
+                animations:
+                  enabled: false
+              legend:
+                show: true
+                position: bottom
+                showForSingleSeries: true
+              tooltip:
+                shared: true
+                intersect: false
+                y:
+                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) + '' USD/kWh'' : ''—''; }'
+              markers:
+                size: 0
+              annotations:
+                yaxis:
+                - y: 0
+                  borderColor: '#808080'
+                  strokeDashArray: 3
+            series:
+            - entity: sensor.comed_fast_price
+              name: Market Mean
+              color: '#4285f4'
+              statistics:
+                type: mean
+                period: hour
+                align: start
+              stroke_dash: 0
+            - entity: sensor.comed_fast_price
+              name: Market Peak
+              color: '#ab47bc'
+              statistics:
+                type: max
+                period: hour
+                align: start
+              stroke_dash: 4
+            - entity: sensor.comed_actual_grid_price
+              name: Estimated Grid Mean
+              color: '#ff9800'
+              statistics:
+                type: mean
+                period: hour
+                align: start
+              stroke_dash: 0
+            - entity: sensor.comed_actual_grid_price
+              name: Estimated Grid Peak
+              color: '#ef5350'
+              statistics:
+                type: max
+                period: hour
+                align: start
+              stroke_dash: 4
+            grid_options:
+              columns: 18
+              rows: 6
+          - type: custom:apexcharts-card
+            section_mode: true
+            header:
+              show: true
+              title: Last 30 Days
+              show_states: false
+            graph_span: 30d
+            span:
+              end: day
+            update_interval: 1min
+            all_series_config:
+              type: line
+              curve: straight
+              stroke_width: 2
+              float_precision: 3
+              unit: USD/kWh
+              extend_to: false
+              show:
+                legend_value: false
+            yaxis:
+            - decimals: 3
+              apex_config:
+                labels:
+                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) : ''—''; }'
+                title:
+                  text: USD/kWh
+            apex_config:
+              chart:
+                toolbar:
+                  show: false
+                animations:
+                  enabled: false
+              legend:
+                show: true
+                position: bottom
+                showForSingleSeries: true
+              tooltip:
+                shared: true
+                intersect: false
+                y:
+                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) + '' USD/kWh'' : ''—''; }'
+              markers:
+                size: 0
+              annotations:
+                yaxis:
+                - y: 0
+                  borderColor: '#808080'
+                  strokeDashArray: 3
+            series:
+            - entity: sensor.comed_fast_price
+              name: Market Mean
+              color: '#4285f4'
+              statistics:
+                type: mean
+                period: day
+                align: start
+              stroke_dash: 0
+            - entity: sensor.comed_fast_price
+              name: Market Peak
+              color: '#ab47bc'
+              statistics:
+                type: max
+                period: day
+                align: start
+              stroke_dash: 4
+            - entity: sensor.comed_actual_grid_price
+              name: Estimated Grid Mean
+              color: '#ff9800'
+              statistics:
+                type: mean
+                period: day
+                align: start
+              stroke_dash: 0
+            - entity: sensor.comed_actual_grid_price
+              name: Estimated Grid Peak
+              color: '#ef5350'
+              statistics:
+                type: max
+                period: day
+                align: start
+              stroke_dash: 4
+            grid_options:
+              columns: 18
+              rows: 6
+      - type: grid
         cards:
           - type: heading
             heading: Solar Production
@@ -393,7 +739,7 @@ views:
             icon: mdi:home-lightning-bolt-outline
           - type: energy-usage-graph
             grid_options:
-              columns: 12
+              columns: 24
               rows: 5
       - type: grid
         cards:

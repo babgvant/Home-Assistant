@@ -1,0 +1,110 @@
+alias: EV - ComEd Price and Battery SOC Control
+description: >
+  Pauses the Emporia EVSE when ComEd pricing is high and the Helios
+  battery reaches reserve SOC. Resumes when pricing normalizes.
+
+triggers:
+  - trigger: state
+    entity_id: sensor.comed_electricity_price
+    id: price_changed
+
+  - trigger: state
+    entity_id: sensor.solark_battery_soc
+    id: soc_changed
+
+  - trigger: state
+    entity_id: switch.p_base_48a
+    id: evse_changed
+
+  - trigger: homeassistant
+    event: start
+    id: startup
+
+conditions:
+  - condition: template
+    value_template: >
+      {{ is_number(states('sensor.comed_electricity_price'))
+         and is_number(states('sensor.solark_battery_soc')) }}
+
+actions:
+  - variables:
+      price: "{{ states('sensor.comed_electricity_price') | float }}"
+      soc: "{{ states('sensor.solark_battery_soc') | float }}"
+      evse_on: "{{ is_state('switch.p_base_48a', 'on') }}"
+      auto_paused: "{{ is_state('input_boolean.evse_automatic_pause', 'on') }}"
+
+  - choose:
+
+      # High price + battery at reserve -> pause EV charging
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ price > 0.25
+                 and soc <= 40
+                 and evse_on }}
+        sequence:
+          # Set ownership BEFORE changing the EVSE state.
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.evse_automatic_pause
+
+          - action: switch.turn_off
+            target:
+              entity_id: switch.p_base_48a
+
+          - action: notify.mobile_app_pixel_10_pro
+            data:
+              title: "EV Charging Paused"
+              message: >
+                Emporia EVSE paused.
+                ComEd: ${{ price | round(3) }}/kWh
+                Helios SOC: {{ soc | round(1) }}%
+
+      # Price has normalized -> resume only if this automation paused it
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ auto_paused
+                 and not evse_on
+                 and price < 0.20 }}
+        sequence:
+          # Clear ownership BEFORE turning the EVSE on.
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.evse_automatic_pause
+
+          - action: switch.turn_on
+            target:
+              entity_id: switch.p_base_48a
+
+          - action: notify.mobile_app_pixel_10_pro
+            data:
+              title: "EV Charging Resumed"
+              message: >
+                Emporia EVSE resumed.
+                ComEd: ${{ price | round(3) }}/kWh
+                Helios SOC: {{ soc | round(1) }}%
+
+      # Someone manually turned the EVSE on while we considered it paused.
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger.id == 'evse_changed'
+                 and auto_paused
+                 and evse_on }}
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.evse_automatic_pause
+
+          - action: notify.mobile_app_pixel_10_pro
+            data:
+              title: "EV Charging Override"
+              message: >
+                Emporia EVSE was turned on manually.
+                Automatic pause state cleared.
+                ComEd: ${{ price | round(3) }}/kWh
+                Helios SOC: {{ soc | round(1) }}%
+
+mode: queued
+max: 5

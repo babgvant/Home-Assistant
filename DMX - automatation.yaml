@@ -1,0 +1,68 @@
+alias: PowerHub DMX - Outdoor Lighting Schedule
+description: >
+  Turn PowerHub DMX RGBW Driver 1 on 30 minutes before sunset at
+  RGB 255,142,36 and 25% brightness only if it is currently off.
+  Turn it off 30 minutes after sunrise.
+  Reconcile after HA restarts and periodically.
+mode: single
+
+triggers:
+  - trigger: sun
+    event: sunset
+    offset: "-00:30:00"
+
+  - trigger: sun
+    event: sunrise
+    offset: "00:30:00"
+
+  - trigger: homeassistant
+    event: start
+
+  - trigger: time_pattern
+    minutes: "/10"
+
+conditions: []
+
+actions:
+  - choose:
+      # Night window
+      - conditions:
+          - condition: sun
+            after: sunset
+            after_offset: "-00:30:00"
+            before: sunrise
+            before_offset: "00:30:00"
+
+          # Only turn it on if it is currently off.
+          # If already on, preserve its current brightness/color.
+          - condition: state
+            entity_id: light.powerhub_dmx_dmx_rgbw_driver_1
+            state: "off"
+
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.powerhub_dmx_dmx_rgbw_driver_1
+            data:
+              brightness_pct: 20
+              rgb_color:
+                - 255
+                - 142
+                - 36
+
+      # Day window
+      - conditions:
+          - condition: sun
+            after: sunrise
+            after_offset: "00:30:00"
+            before: sunset
+            before_offset: "-00:30:00"
+
+          - condition: state
+            entity_id: light.powerhub_dmx_dmx_rgbw_driver_1
+            state: "on"
+
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.powerhub_dmx_dmx_rgbw_driver_1
