@@ -1,4 +1,3 @@
-# title: Solar & Storage
 views:
   - title: Overview
     path: overview
@@ -202,177 +201,42 @@ views:
       - type: grid
         column_span: 3
         cards:
-        - type: heading
-          heading: Power — Last 24 Hours
-          icon: mdi:chart-line
-        - type: history-graph
-          hours_to_show: 24
-          entities:
-          - entity: sensor.solark_pv_power
-            name: Solar
-          - entity: sensor.solark_load_power
-            name: Home
-          - entity: sensor.solark_grid_power_net
-            name: Grid Net
-          - entity: sensor.solark_battery_power
-            name: Battery Net
-          - entity: sensor.global_p_house_smart_load_power
-            name: Smart Load
-          grid_options:
-            columns: 36
-            rows: auto
+          - type: heading
+            heading: Power — Last 24 Hours
+            icon: mdi:chart-line
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.solark_pv_power
+                name: Solar
+              - entity: sensor.solark_load_power
+                name: Home
+              - entity: sensor.solark_grid_power_net
+                name: Grid Net
+              - entity: sensor.solark_battery_power
+                name: Battery Net
+              - entity: sensor.global_p_house_smart_load_power
+                name: Smart Load
+            grid_options:
+              columns: 36
+              rows: auto
       - type: grid
         column_span: 1
         cards:
-        - type: heading
-          heading: Battery SOC — Last 24 Hours
-          icon: mdi:battery-clock
-        - type: history-graph
-          hours_to_show: 24
-          entities:
-          - entity: sensor.p_base_state_of_charge
-            name: State of Charge
-          grid_options:
-            columns: 12
-            rows: 3
+          - type: heading
+            heading: Battery SOC — Last 24 Hours
+            icon: mdi:battery-clock
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.p_base_state_of_charge
+                name: State of Charge
+            grid_options:
+              columns: 12
+              rows: 3
       - type: grid
         column_span: 3
-        cards:
-          - type: heading
-            heading: HELIOS Battery Health
-            icon: mdi:battery-heart-variant
-          - type: entities
-            title: Battery 2460061
-            state_color: true
-            show_header_toggle: false
-            entities:
-              - entity: sensor.battery_dlphd48b252460061_state_of_charge
-                name: SOC
-              - entity: sensor.battery_dlphd48b252460061_battery_temperature
-                name: Battery Temp
-              - entity: sensor.battery_dlphd48b252460061_bms_temperature
-                name: BMS Temp
-              - entity: sensor.battery_dlphd48b252460061_terminal_voltage
-                name: Voltage
-              - entity: sensor.battery_dlphd48b252460061_current
-                name: Current
-              - entity: sensor.battery_dlphd48b252460061_cell_spread
-                name: Cell Spread
-              - entity: binary_sensor.battery_dlphd48b252460061_fault_or_warning
-                name: Fault / Warning
-            grid_options:
-              columns: 7
-              rows: auto
-          - type: entities
-            title: Battery 2460084
-            state_color: true
-            show_header_toggle: false
-            entities:
-              - entity: sensor.battery_dlphd48b252460084_state_of_charge
-                name: SOC
-              - entity: sensor.battery_dlphd48b252460084_battery_temperature
-                name: Battery Temp
-              - entity: sensor.battery_dlphd48b252460084_bms_temperature
-                name: BMS Temp
-              - entity: sensor.battery_dlphd48b252460084_terminal_voltage
-                name: Voltage
-              - entity: sensor.battery_dlphd48b252460084_current
-                name: Current
-              - entity: sensor.battery_dlphd48b252460084_cell_spread
-                name: Cell Spread
-              - entity: binary_sensor.battery_dlphd48b252460084_fault_or_warning
-                name: Fault / Warning
-            grid_options:
-              columns: 7
-              rows: auto
-          - type: entities
-            title: Battery 2460095
-            state_color: true
-            show_header_toggle: false
-            entities:
-              - entity: sensor.battery_dlphd48b252460095_state_of_charge
-                name: SOC
-              - entity: sensor.battery_dlphd48b252460095_battery_temperature
-                name: Battery Temp
-              - entity: sensor.battery_dlphd48b252460095_bms_temperature
-                name: BMS Temp
-              - entity: sensor.battery_dlphd48b252460095_terminal_voltage
-                name: Voltage
-              - entity: sensor.battery_dlphd48b252460095_current
-                name: Current
-              - entity: sensor.battery_dlphd48b252460095_cell_spread
-                name: Cell Spread
-              - entity: binary_sensor.battery_dlphd48b252460095_fault_or_warning
-                name: Fault / Warning
-            grid_options:
-              columns: 7
-              rows: auto
-          - type: entities
-            title: Battery 2460100
-            state_color: true
-            show_header_toggle: false
-            entities:
-              - entity: sensor.battery_dlphd48b252460100_state_of_charge
-                name: SOC
-              - entity: sensor.battery_dlphd48b252460100_battery_temperature
-                name: Battery Temp
-              - entity: sensor.battery_dlphd48b252460100_bms_temperature
-                name: BMS Temp
-              - entity: sensor.battery_dlphd48b252460100_terminal_voltage
-                name: Voltage
-              - entity: sensor.battery_dlphd48b252460100_current
-                name: Current
-              - entity: sensor.battery_dlphd48b252460100_cell_spread
-                name: Cell Spread
-              - entity: binary_sensor.battery_dlphd48b252460100_fault_or_warning
-                name: Fault / Warning
-            grid_options:
-              columns: 7
-              rows: auto
-          - type: entities
-            title: Battery 2550243
-            state_color: true
-            show_header_toggle: false
-            entities:
-              - entity: sensor.battery_dlphd48b252550243_state_of_charge
-                name: SOC
-              - entity: sensor.battery_dlphd48b252550243_battery_temperature
-                name: Battery Temp
-              - entity: sensor.battery_dlphd48b252550243_bms_temperature
-                name: BMS Temp
-              - entity: sensor.battery_dlphd48b252550243_terminal_voltage
-                name: Voltage
-              - entity: sensor.battery_dlphd48b252550243_current
-                name: Current
-              - entity: sensor.battery_dlphd48b252550243_cell_spread
-                name: Cell Spread
-              - entity: binary_sensor.battery_dlphd48b252550243_fault_or_warning
-                name: Fault / Warning
-            grid_options:
-              columns: 7
-              rows: auto
-          - type: entities
-            title: Battery 2550244
-            state_color: true
-            show_header_toggle: false
-            entities:
-              - entity: sensor.battery_dlphd48b252550244_state_of_charge
-                name: SOC
-              - entity: sensor.battery_dlphd48b252550244_battery_temperature
-                name: Battery Temp
-              - entity: sensor.battery_dlphd48b252550244_bms_temperature
-                name: BMS Temp
-              - entity: sensor.battery_dlphd48b252550244_terminal_voltage
-                name: Voltage
-              - entity: sensor.battery_dlphd48b252550244_current
-                name: Current
-              - entity: sensor.battery_dlphd48b252550244_cell_spread
-                name: Cell Spread
-              - entity: binary_sensor.battery_dlphd48b252550244_fault_or_warning
-                name: Fault / Warning
-            grid_options:
-              columns: 7
-              rows: auto
+        cards: []
   - title: Energy
     path: energy
     icon: mdi:chart-areaspline
@@ -412,10 +276,12 @@ views:
               show:
                 legend_value: false
             yaxis:
-            - decimals: 3
-              apex_config:
-                labels:
-                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) : ''—''; }'
+              - decimals: 3
+                apex_config:
+                  labels:
+                    formatter: >-
+                      EVAL:function(value) { return Number.isFinite(value) ?
+                      value.toFixed(3) : '—'; }
             apex_config:
               chart:
                 toolbar:
@@ -433,40 +299,42 @@ views:
               tooltip:
                 shared: true
                 intersect: false
-                y:
-                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) + '' USD/kWh'' : ''—''; }'
+                'true':
+                  formatter: >-
+                    EVAL:function(value) { return Number.isFinite(value) ?
+                    value.toFixed(3) + ' USD/kWh' : '—'; }
               markers:
                 size: 0
               annotations:
                 yaxis:
-                - y: 0
-                  borderColor: '#808080'
-                  strokeDashArray: 3
+                  - 'true': 0
+                    borderColor: '#808080'
+                    strokeDashArray: 3
             series:
-            - entity: sensor.comed_fast_price
-              name: Market Mean
-              color: '#4285f4'
-              statistics:
-                type: mean
-                period: 5minute
-                align: start
-              stroke_dash: 0
-            - entity: sensor.comed_fast_price
-              name: Market Peak
-              color: '#ab47bc'
-              statistics:
-                type: max
-                period: 5minute
-                align: start
-              stroke_dash: 4
-            - entity: sensor.comed_actual_grid_price
-              name: Grid (Est.)
-              color: '#ff9800'
-              statistics:
-                type: max
-                period: 5minute
-                align: start
-              stroke_dash: 0
+              - entity: sensor.comed_fast_price
+                name: Market Mean
+                color: '#4285f4'
+                statistics:
+                  type: mean
+                  period: 5minute
+                  align: start
+                stroke_dash: 0
+              - entity: sensor.comed_fast_price
+                name: Market Peak
+                color: '#ab47bc'
+                statistics:
+                  type: max
+                  period: 5minute
+                  align: start
+                stroke_dash: 4
+              - entity: sensor.comed_actual_grid_price
+                name: Grid (Est.)
+                color: '#ff9800'
+                statistics:
+                  type: max
+                  period: 5minute
+                  align: start
+                stroke_dash: 0
             grid_options:
               columns: 36
               rows: 6
@@ -474,268 +342,348 @@ views:
             columns: 4
             square: false
             cards:
-            - type: markdown
-              content: |-
-                {% set value = states('sensor.comed_fast_price') %}
-                {% set price = ('%.3f' | format(value | float)) if is_number(value) else '—' %}
-                <table role="presentation">
-                <tr>
-                <td width="36"><font color="#4caf50"><ha-icon icon="mdi:cash-clock"></ha-icon></font></td>
-                <td><small><strong>5-Minute Price</strong></small><br><strong>{{ price }}</strong> <small>USD/kWh</small></td>
-                </tr>
-                </table>
-              entity_id:
-              - sensor.comed_fast_price
-              tap_action:
-                action: more-info
-                entity: sensor.comed_fast_price
-            - type: markdown
-              content: |-
-                {% set value = states('sensor.comed_electricity_price') %}
-                {% set price = ('%.3f' | format(value | float)) if is_number(value) else '—' %}
-                <table role="presentation">
-                <tr>
-                <td width="36"><font color="#03a9f4"><ha-icon icon="mdi:clock-outline"></ha-icon></font></td>
-                <td><small><strong>Hour Average</strong></small><br><strong>{{ price }}</strong> <small>USD/kWh</small></td>
-                </tr>
-                </table>
-              entity_id:
-              - sensor.comed_electricity_price
-              tap_action:
-                action: more-info
-                entity: sensor.comed_electricity_price
-            - type: markdown
-              content: |-
-                {% set value = states('sensor.comed_actual_grid_price') %}
-                {% set price = ('%.3f' | format(value | float)) if is_number(value) else '—' %}
-                <table role="presentation">
-                <tr>
-                <td width="36"><font color="#ffc107"><ha-icon icon="mdi:transmission-tower-import"></ha-icon></font></td>
-                <td><small><strong>Grid Price (Est.)</strong></small><br><strong>{{ price }}</strong> <small>USD/kWh</small></td>
-                </tr>
-                </table>
-              entity_id:
-              - sensor.comed_actual_grid_price
-              tap_action:
-                action: more-info
-                entity: sensor.comed_actual_grid_price
-            - type: custom:apexcharts-card
-              header:
-                show: true
-                title: Today Peak
-                show_states: true
-                colorize_states: false
-              graph_span: 24h
-              span:
-                start: day
-              update_interval: 1min
-              series:
-              - entity: sensor.comed_fast_price
-                name: Market Peak
-                color: '#ab47bc'
-                unit: USD/kWh
-                float_precision: 3
-                statistics:
-                  type: max
-                  period: day
-                  align: start
-                extend_to: false
-                show:
-                  name_in_header: false
-                  legend_value: false
-              apex_config:
-                chart:
-                  height: 24
-                  sparkline:
-                    enabled: true
-                legend:
-                  show: false
-                tooltip:
-                  enabled: false
-                markers:
-                  size: 0
-                stroke:
-                  width: 0
-              section_mode: false
-              card_mod:
-                style: |
-                  ha-card {
-                    height: 100%;
-                    min-height: 104px;
-                    display: flex;
-                    align-items: center;
-                    position: relative;
-                  }
-                  ha-card::before {
-                    content: "";
-                    position: absolute;
-                    left: 20px;
-                    width: 24px;
-                    height: 24px;
-                    background-color: #ab47bc;
-                    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2016l5-6%204%203%206-8%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
-                    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2016l5-6%204%203%206-8%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
-                  }
-                  .wrapper { width: 100%; box-sizing: border-box; padding: 16px !important; }
-                  #header { padding: 0 0 0 40px !important; }
-                  #header__title {
-                    font-size: 12px !important;
-                    font-weight: 700 !important;
-                    line-height: 20px !important;
-                    padding-bottom: 0 !important;
-                    color: var(--primary-text-color) !important;
-                  }
-                  #state__value > #state {
-                    font-size: 14px !important;
-                    font-weight: 700 !important;
-                    color: var(--primary-text-color) !important;
-                  }
-                  #state__value > #uom {
-                    font-size: 12px !important;
-                    margin-left: 4px;
-                    color: var(--primary-text-color) !important;
-                    opacity: 1;
-                  }
-                  #graph-wrapper { display: none !important; }
+              - type: markdown
+                content: >-
+                  {% set value = states('sensor.comed_fast_price') %}
+
+                  {% set price = ('%.3f' | format(value | float)) if
+                  is_number(value) else '—' %}
+
+                  <table role="presentation">
+
+                  <tr>
+
+                  <td width="36"><font color="#4caf50"><ha-icon
+                  icon="mdi:cash-clock"></ha-icon></font></td>
+
+                  <td><small><strong>5-Minute
+                  Price</strong></small><br><strong>{{ price }}</strong>
+                  <small>USD/kWh</small></td>
+
+                  </tr>
+
+                  </table>
+                entity_id:
+                  - sensor.comed_fast_price
+                tap_action:
+                  action: more-info
+                  entity: sensor.comed_fast_price
+              - type: markdown
+                content: >-
+                  {% set value = states('sensor.comed_electricity_price') %}
+
+                  {% set price = ('%.3f' | format(value | float)) if
+                  is_number(value) else '—' %}
+
+                  <table role="presentation">
+
+                  <tr>
+
+                  <td width="36"><font color="#03a9f4"><ha-icon
+                  icon="mdi:clock-outline"></ha-icon></font></td>
+
+                  <td><small><strong>Hour Average</strong></small><br><strong>{{
+                  price }}</strong> <small>USD/kWh</small></td>
+
+                  </tr>
+
+                  </table>
+                entity_id:
+                  - sensor.comed_electricity_price
+                tap_action:
+                  action: more-info
+                  entity: sensor.comed_electricity_price
+              - type: markdown
+                content: >-
+                  {% set value = states('sensor.comed_actual_grid_price') %}
+
+                  {% set price = ('%.3f' | format(value | float)) if
+                  is_number(value) else '—' %}
+
+                  <table role="presentation">
+
+                  <tr>
+
+                  <td width="36"><font color="#ffc107"><ha-icon
+                  icon="mdi:transmission-tower-import"></ha-icon></font></td>
+
+                  <td><small><strong>Grid Price
+                  (Est.)</strong></small><br><strong>{{ price }}</strong>
+                  <small>USD/kWh</small></td>
+
+                  </tr>
+
+                  </table>
+                entity_id:
+                  - sensor.comed_actual_grid_price
+                tap_action:
+                  action: more-info
+                  entity: sensor.comed_actual_grid_price
+              - type: custom:apexcharts-card
+                header:
+                  show: true
+                  title: Today Peak
+                  show_states: true
+                  colorize_states: false
+                graph_span: 24h
+                span:
+                  start: day
+                update_interval: 1min
+                series:
+                  - entity: sensor.comed_fast_price
+                    name: Market Peak
+                    color: '#ab47bc'
+                    unit: USD/kWh
+                    float_precision: 3
+                    statistics:
+                      type: max
+                      period: day
+                      align: start
+                    extend_to: false
+                    show:
+                      name_in_header: false
+                      legend_value: false
+                apex_config:
+                  chart:
+                    height: 24
+                    sparkline:
+                      enabled: true
+                  legend:
+                    show: false
+                  tooltip:
+                    enabled: false
+                  markers:
+                    size: 0
+                  stroke:
+                    width: 0
+                section_mode: false
+                card_mod:
+                  style: >
+                    ha-card {
+                      height: 100%;
+                      min-height: 104px;
+                      display: flex;
+                      align-items: center;
+                      position: relative;
+                    }
+
+                    ha-card::before {
+                      content: "";
+                      position: absolute;
+                      left: 20px;
+                      width: 24px;
+                      height: 24px;
+                      background-color: #ab47bc;
+                      -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2016l5-6%204%203%206-8%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+                      mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2016l5-6%204%203%206-8%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+                    }
+
+                    .wrapper { width: 100%; box-sizing: border-box; padding:
+                    16px !important; }
+
+                    #header { padding: 0 0 0 40px !important; }
+
+                    #header__title {
+                      font-size: 12px !important;
+                      font-weight: 700 !important;
+                      line-height: 20px !important;
+                      padding-bottom: 0 !important;
+                      color: var(--primary-text-color) !important;
+                    }
+
+                    #state__value > #state {
+                      font-size: 14px !important;
+                      font-weight: 700 !important;
+                      color: var(--primary-text-color) !important;
+                    }
+
+                    #state__value > #uom {
+                      font-size: 12px !important;
+                      margin-left: 4px;
+                      color: var(--primary-text-color) !important;
+                      opacity: 1;
+                    }
+
+                    #graph-wrapper { display: none !important; }
             grid_options:
               columns: 36
               rows: auto
             visibility:
-            - condition: screen
-              media_query: '(min-width: 768px)'
+              - condition: screen
+                media_query: '(min-width: 768px)'
           - type: grid
             columns: 2
             square: false
             cards:
-            - type: markdown
-              content: |-
-                {% set value = states('sensor.comed_fast_price') %}
-                {% set price = ('%.3f' | format(value | float)) if is_number(value) else '—' %}
-                <table role="presentation">
-                <tr>
-                <td width="36"><font color="#4caf50"><ha-icon icon="mdi:cash-clock"></ha-icon></font></td>
-                <td><small><strong>5-Minute Price</strong></small><br><strong>{{ price }}</strong> <small>USD/kWh</small></td>
-                </tr>
-                </table>
-              entity_id:
-              - sensor.comed_fast_price
-              tap_action:
-                action: more-info
-                entity: sensor.comed_fast_price
-            - type: markdown
-              content: |-
-                {% set value = states('sensor.comed_electricity_price') %}
-                {% set price = ('%.3f' | format(value | float)) if is_number(value) else '—' %}
-                <table role="presentation">
-                <tr>
-                <td width="36"><font color="#03a9f4"><ha-icon icon="mdi:clock-outline"></ha-icon></font></td>
-                <td><small><strong>Hour Average</strong></small><br><strong>{{ price }}</strong> <small>USD/kWh</small></td>
-                </tr>
-                </table>
-              entity_id:
-              - sensor.comed_electricity_price
-              tap_action:
-                action: more-info
-                entity: sensor.comed_electricity_price
-            - type: markdown
-              content: |-
-                {% set value = states('sensor.comed_actual_grid_price') %}
-                {% set price = ('%.3f' | format(value | float)) if is_number(value) else '—' %}
-                <table role="presentation">
-                <tr>
-                <td width="36"><font color="#ffc107"><ha-icon icon="mdi:transmission-tower-import"></ha-icon></font></td>
-                <td><small><strong>Grid Price (Est.)</strong></small><br><strong>{{ price }}</strong> <small>USD/kWh</small></td>
-                </tr>
-                </table>
-              entity_id:
-              - sensor.comed_actual_grid_price
-              tap_action:
-                action: more-info
-                entity: sensor.comed_actual_grid_price
-            - type: custom:apexcharts-card
-              header:
-                show: true
-                title: Today Peak
-                show_states: true
-                colorize_states: false
-              graph_span: 24h
-              span:
-                start: day
-              update_interval: 1min
-              series:
-              - entity: sensor.comed_fast_price
-                name: Market Peak
-                color: '#ab47bc'
-                unit: USD/kWh
-                float_precision: 3
-                statistics:
-                  type: max
-                  period: day
-                  align: start
-                extend_to: false
-                show:
-                  name_in_header: false
-                  legend_value: false
-              apex_config:
-                chart:
-                  height: 24
-                  sparkline:
-                    enabled: true
-                legend:
-                  show: false
-                tooltip:
-                  enabled: false
-                markers:
-                  size: 0
-                stroke:
-                  width: 0
-              section_mode: false
-              card_mod:
-                style: |
-                  ha-card {
-                    height: 100%;
-                    min-height: 104px;
-                    display: flex;
-                    align-items: center;
-                    position: relative;
-                  }
-                  ha-card::before {
-                    content: "";
-                    position: absolute;
-                    left: 20px;
-                    width: 24px;
-                    height: 24px;
-                    background-color: #ab47bc;
-                    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2016l5-6%204%203%206-8%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
-                    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2016l5-6%204%203%206-8%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
-                  }
-                  .wrapper { width: 100%; box-sizing: border-box; padding: 16px !important; }
-                  #header { padding: 0 0 0 40px !important; }
-                  #header__title {
-                    font-size: 12px !important;
-                    font-weight: 700 !important;
-                    line-height: 20px !important;
-                    padding-bottom: 0 !important;
-                    color: var(--primary-text-color) !important;
-                  }
-                  #state__value > #state {
-                    font-size: 14px !important;
-                    font-weight: 700 !important;
-                    color: var(--primary-text-color) !important;
-                  }
-                  #state__value > #uom {
-                    font-size: 12px !important;
-                    margin-left: 4px;
-                    color: var(--primary-text-color) !important;
-                    opacity: 1;
-                  }
-                  #graph-wrapper { display: none !important; }
+              - type: markdown
+                content: >-
+                  {% set value = states('sensor.comed_fast_price') %}
+
+                  {% set price = ('%.3f' | format(value | float)) if
+                  is_number(value) else '—' %}
+
+                  <table role="presentation">
+
+                  <tr>
+
+                  <td width="36"><font color="#4caf50"><ha-icon
+                  icon="mdi:cash-clock"></ha-icon></font></td>
+
+                  <td><small><strong>5-Minute
+                  Price</strong></small><br><strong>{{ price }}</strong>
+                  <small>USD/kWh</small></td>
+
+                  </tr>
+
+                  </table>
+                entity_id:
+                  - sensor.comed_fast_price
+                tap_action:
+                  action: more-info
+                  entity: sensor.comed_fast_price
+              - type: markdown
+                content: >-
+                  {% set value = states('sensor.comed_electricity_price') %}
+
+                  {% set price = ('%.3f' | format(value | float)) if
+                  is_number(value) else '—' %}
+
+                  <table role="presentation">
+
+                  <tr>
+
+                  <td width="36"><font color="#03a9f4"><ha-icon
+                  icon="mdi:clock-outline"></ha-icon></font></td>
+
+                  <td><small><strong>Hour Average</strong></small><br><strong>{{
+                  price }}</strong> <small>USD/kWh</small></td>
+
+                  </tr>
+
+                  </table>
+                entity_id:
+                  - sensor.comed_electricity_price
+                tap_action:
+                  action: more-info
+                  entity: sensor.comed_electricity_price
+              - type: markdown
+                content: >-
+                  {% set value = states('sensor.comed_actual_grid_price') %}
+
+                  {% set price = ('%.3f' | format(value | float)) if
+                  is_number(value) else '—' %}
+
+                  <table role="presentation">
+
+                  <tr>
+
+                  <td width="36"><font color="#ffc107"><ha-icon
+                  icon="mdi:transmission-tower-import"></ha-icon></font></td>
+
+                  <td><small><strong>Grid Price
+                  (Est.)</strong></small><br><strong>{{ price }}</strong>
+                  <small>USD/kWh</small></td>
+
+                  </tr>
+
+                  </table>
+                entity_id:
+                  - sensor.comed_actual_grid_price
+                tap_action:
+                  action: more-info
+                  entity: sensor.comed_actual_grid_price
+              - type: custom:apexcharts-card
+                header:
+                  show: true
+                  title: Today Peak
+                  show_states: true
+                  colorize_states: false
+                graph_span: 24h
+                span:
+                  start: day
+                update_interval: 1min
+                series:
+                  - entity: sensor.comed_fast_price
+                    name: Market Peak
+                    color: '#ab47bc'
+                    unit: USD/kWh
+                    float_precision: 3
+                    statistics:
+                      type: max
+                      period: day
+                      align: start
+                    extend_to: false
+                    show:
+                      name_in_header: false
+                      legend_value: false
+                apex_config:
+                  chart:
+                    height: 24
+                    sparkline:
+                      enabled: true
+                  legend:
+                    show: false
+                  tooltip:
+                    enabled: false
+                  markers:
+                    size: 0
+                  stroke:
+                    width: 0
+                section_mode: false
+                card_mod:
+                  style: >
+                    ha-card {
+                      height: 100%;
+                      min-height: 104px;
+                      display: flex;
+                      align-items: center;
+                      position: relative;
+                    }
+
+                    ha-card::before {
+                      content: "";
+                      position: absolute;
+                      left: 20px;
+                      width: 24px;
+                      height: 24px;
+                      background-color: #ab47bc;
+                      -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2016l5-6%204%203%206-8%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+                      mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2016l5-6%204%203%206-8%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+                    }
+
+                    .wrapper { width: 100%; box-sizing: border-box; padding:
+                    16px !important; }
+
+                    #header { padding: 0 0 0 40px !important; }
+
+                    #header__title {
+                      font-size: 12px !important;
+                      font-weight: 700 !important;
+                      line-height: 20px !important;
+                      padding-bottom: 0 !important;
+                      color: var(--primary-text-color) !important;
+                    }
+
+                    #state__value > #state {
+                      font-size: 14px !important;
+                      font-weight: 700 !important;
+                      color: var(--primary-text-color) !important;
+                    }
+
+                    #state__value > #uom {
+                      font-size: 12px !important;
+                      margin-left: 4px;
+                      color: var(--primary-text-color) !important;
+                      opacity: 1;
+                    }
+
+                    #graph-wrapper { display: none !important; }
             grid_options:
               columns: 36
               rows: auto
             visibility:
-            - condition: screen
-              media_query: '(max-width: 767.99px)'
+              - condition: screen
+                media_query: '(max-width: 767.99px)'
           - type: custom:apexcharts-card
             section_mode: true
             header:
@@ -756,10 +704,12 @@ views:
               show:
                 legend_value: false
             yaxis:
-            - decimals: 3
-              apex_config:
-                labels:
-                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) : ''—''; }'
+              - decimals: 3
+                apex_config:
+                  labels:
+                    formatter: >-
+                      EVAL:function(value) { return Number.isFinite(value) ?
+                      value.toFixed(3) : '—'; }
             apex_config:
               chart:
                 toolbar:
@@ -777,48 +727,50 @@ views:
               tooltip:
                 shared: true
                 intersect: false
-                y:
-                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) + '' USD/kWh'' : ''—''; }'
+                'true':
+                  formatter: >-
+                    EVAL:function(value) { return Number.isFinite(value) ?
+                    value.toFixed(3) + ' USD/kWh' : '—'; }
               markers:
                 size: 0
               annotations:
                 yaxis:
-                - y: 0
-                  borderColor: '#808080'
-                  strokeDashArray: 3
+                  - 'true': 0
+                    borderColor: '#808080'
+                    strokeDashArray: 3
             series:
-            - entity: sensor.comed_fast_price
-              name: Market Mean
-              color: '#4285f4'
-              statistics:
-                type: mean
-                period: hour
-                align: start
-              stroke_dash: 0
-            - entity: sensor.comed_fast_price
-              name: Market Peak
-              color: '#ab47bc'
-              statistics:
-                type: max
-                period: hour
-                align: start
-              stroke_dash: 4
-            - entity: sensor.comed_actual_grid_price
-              name: Grid Mean (Est.)
-              color: '#ff9800'
-              statistics:
-                type: mean
-                period: hour
-                align: start
-              stroke_dash: 0
-            - entity: sensor.comed_actual_grid_price
-              name: Grid Peak (Est.)
-              color: '#ef5350'
-              statistics:
-                type: max
-                period: hour
-                align: start
-              stroke_dash: 4
+              - entity: sensor.comed_fast_price
+                name: Market Mean
+                color: '#4285f4'
+                statistics:
+                  type: mean
+                  period: hour
+                  align: start
+                stroke_dash: 0
+              - entity: sensor.comed_fast_price
+                name: Market Peak
+                color: '#ab47bc'
+                statistics:
+                  type: max
+                  period: hour
+                  align: start
+                stroke_dash: 4
+              - entity: sensor.comed_actual_grid_price
+                name: Grid Mean (Est.)
+                color: '#ff9800'
+                statistics:
+                  type: mean
+                  period: hour
+                  align: start
+                stroke_dash: 0
+              - entity: sensor.comed_actual_grid_price
+                name: Grid Peak (Est.)
+                color: '#ef5350'
+                statistics:
+                  type: max
+                  period: hour
+                  align: start
+                stroke_dash: 4
             grid_options:
               columns: 36
               rows: 6
@@ -842,10 +794,12 @@ views:
               show:
                 legend_value: false
             yaxis:
-            - decimals: 3
-              apex_config:
-                labels:
-                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) : ''—''; }'
+              - decimals: 3
+                apex_config:
+                  labels:
+                    formatter: >-
+                      EVAL:function(value) { return Number.isFinite(value) ?
+                      value.toFixed(3) : '—'; }
             apex_config:
               chart:
                 toolbar:
@@ -863,48 +817,50 @@ views:
               tooltip:
                 shared: true
                 intersect: false
-                y:
-                  formatter: 'EVAL:function(value) { return Number.isFinite(value) ? value.toFixed(3) + '' USD/kWh'' : ''—''; }'
+                'true':
+                  formatter: >-
+                    EVAL:function(value) { return Number.isFinite(value) ?
+                    value.toFixed(3) + ' USD/kWh' : '—'; }
               markers:
                 size: 0
               annotations:
                 yaxis:
-                - y: 0
-                  borderColor: '#808080'
-                  strokeDashArray: 3
+                  - 'true': 0
+                    borderColor: '#808080'
+                    strokeDashArray: 3
             series:
-            - entity: sensor.comed_fast_price
-              name: Market Mean
-              color: '#4285f4'
-              statistics:
-                type: mean
-                period: day
-                align: start
-              stroke_dash: 0
-            - entity: sensor.comed_fast_price
-              name: Market Peak
-              color: '#ab47bc'
-              statistics:
-                type: max
-                period: day
-                align: start
-              stroke_dash: 4
-            - entity: sensor.comed_actual_grid_price
-              name: Grid Mean (Est.)
-              color: '#ff9800'
-              statistics:
-                type: mean
-                period: day
-                align: start
-              stroke_dash: 0
-            - entity: sensor.comed_actual_grid_price
-              name: Grid Peak (Est.)
-              color: '#ef5350'
-              statistics:
-                type: max
-                period: day
-                align: start
-              stroke_dash: 4
+              - entity: sensor.comed_fast_price
+                name: Market Mean
+                color: '#4285f4'
+                statistics:
+                  type: mean
+                  period: day
+                  align: start
+                stroke_dash: 0
+              - entity: sensor.comed_fast_price
+                name: Market Peak
+                color: '#ab47bc'
+                statistics:
+                  type: max
+                  period: day
+                  align: start
+                stroke_dash: 4
+              - entity: sensor.comed_actual_grid_price
+                name: Grid Mean (Est.)
+                color: '#ff9800'
+                statistics:
+                  type: mean
+                  period: day
+                  align: start
+                stroke_dash: 0
+              - entity: sensor.comed_actual_grid_price
+                name: Grid Peak (Est.)
+                color: '#ef5350'
+                statistics:
+                  type: max
+                  period: day
+                  align: start
+                stroke_dash: 4
             grid_options:
               columns: 36
               rows: 6
