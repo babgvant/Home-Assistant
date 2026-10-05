@@ -1,12 +1,17 @@
 alias: EV - ComEd Price and Battery SOC Control
 description: >
-  Pauses the Emporia EVSE when ComEd pricing is high and the Helios
-  battery reaches reserve SOC. Resumes when pricing normalizes.
+  Controls the Emporia and Grizzl-E EVSEs together based on ComEd electricity
+  pricing and Helios battery SOC. Pauses both EVSEs when pricing is high and
+  battery SOC has reached reserve. Resumes both when pricing normalizes.
 
 triggers:
   - trigger: state
+    entity_id: sensor.comed_fast_price
+    id: fast_price_changed
+
+  - trigger: state
     entity_id: sensor.comed_electricity_price
-    id: price_changed
+    id: hourly_price_changed
 
   - trigger: state
     entity_id: sensor.solark_battery_soc
@@ -14,7 +19,15 @@ triggers:
 
   - trigger: state
     entity_id: switch.p_base_48a
-    id: evse_changed
+    id: emporia_changed
+
+  - trigger: state
+    entity_id: switch.garage_grizzl_e_charger_charging
+    id: grizzle_changed
+
+  - trigger: time_pattern
+    minutes: "6"
+    id: resume_check
 
   - trigger: homeassistant
     event: start
@@ -23,88 +36,164 @@ triggers:
 conditions:
   - condition: template
     value_template: >
-      {{ is_number(states('sensor.comed_electricity_price'))
+      {{ is_number(states('sensor.comed_fast_price'))
+         and is_number(states('sensor.comed_electricity_price'))
          and is_number(states('sensor.solark_battery_soc')) }}
 
 actions:
   - variables:
-      price: "{{ states('sensor.comed_electricity_price') | float }}"
+      fast_price: "{{ states('sensor.comed_fast_price') | float }}"
+      hourly_price: "{{ states('sensor.comed_electricity_price') | float }}"
       soc: "{{ states('sensor.solark_battery_soc') | float }}"
-      evse_on: "{{ is_state('switch.p_base_48a', 'on') }}"
-      auto_paused: "{{ is_state('input_boolean.evse_automatic_pause', 'on') }}"
+
+      emporia_on: >
+        {{ is_state('switch.p_base_48a', 'on') }}
+
+      grizzle_on: >
+        {{ is_state('switch.garage_grizzl_e_charger_charging', 'on') }}
+
+      any_evse_on: >
+        {{ emporia_on or grizzle_on }}
+
+      auto_paused: >
+        {{ is_state('input_boolean.evse_automatic_pause', 'on') }}
 
   - choose:
 
-      # High price + battery at reserve -> pause EV charging
-      - conditions:
-          - condition: template
-            value_template: >
-              {{ price > 0.25
-                 and soc <= 40
-                 and evse_on }}
-        sequence:
-          # Set ownership BEFORE changing the EVSE state.
-          - action: input_boolean.turn_on
-            target:
-              entity_id: input_boolean.evse_automatic_pause
+      # ============================================================
+      # MANUAL OVERRIDE
+      #
+      # If either EVSE is manually turned back on while automatically
+      # paused, treat that as an intentional override.
+      #
+      # Clear automatic pause and enable both chargers.
+      # ============================================================
 
-          - action: switch.turn_off
-            target:
-              entity_id: switch.p_base_48a
-
-          - action: notify.mobile_app_pixel_10_pro
-            data:
-              title: "EV Charging Paused"
-              message: >
-                Emporia EVSE paused.
-                ComEd: ${{ price | round(3) }}/kWh
-                Helios SOC: {{ soc | round(1) }}%
-
-      # Price has normalized -> resume only if this automation paused it
       - conditions:
           - condition: template
             value_template: >
               {{ auto_paused
-                 and not evse_on
-                 and price < 0.20 }}
+                 and (
+                   (trigger.id == 'emporia_changed' and emporia_on)
+                   or
+                   (trigger.id == 'grizzle_changed' and grizzle_on)
+                 ) }}
         sequence:
-          # Clear ownership BEFORE turning the EVSE on.
           - action: input_boolean.turn_off
             target:
               entity_id: input_boolean.evse_automatic_pause
 
           - action: switch.turn_on
             target:
-              entity_id: switch.p_base_48a
+              entity_id:
+                - switch.p_base_48a
+                - switch.garage_grizzl_e_charger_charging
 
           - action: notify.mobile_app_pixel_10_pro
             data:
-              title: "EV Charging Resumed"
+              title: EV Charging Override
               message: >
-                Emporia EVSE resumed.
-                ComEd: ${{ price | round(3) }}/kWh
-                Helios SOC: {{ soc | round(1) }}%
+                EV charging was enabled manually.
+                Both EVSEs have been enabled and automatic pause was cleared.
+                ComEd 5-min: ${{ fast_price | round(3) }}/kWh.
+                Current hour avg: ${{ hourly_price | round(3) }}/kWh.
+                Helios SOC: {{ soc | round(1) }}%.
 
-      # Someone manually turned the EVSE on while we considered it paused.
+      # ============================================================
+      # PAUSE
+      #
+      # Pause when:
+      #
+      #   SOC <= 40%
+      #
+      # AND either:
+      #
+      #   current-hour average > $0.25/kWh
+      #   OR
+      #   latest 5-minute price > $0.50/kWh
+      #
+      # EVSE state-change triggers are deliberately excluded here so
+      # a manual override is not immediately undone.
+      # ============================================================
+
       - conditions:
           - condition: template
             value_template: >
-              {{ trigger.id == 'evse_changed'
-                 and auto_paused
-                 and evse_on }}
+              {{ trigger.id in [
+                   'fast_price_changed',
+                   'hourly_price_changed',
+                   'soc_changed',
+                   'startup'
+                 ]
+                 and not auto_paused
+                 and soc <= 40
+                 and any_evse_on
+                 and (
+                   hourly_price > 0.25
+                   or fast_price > 0.50
+                 ) }}
         sequence:
-          - action: input_boolean.turn_off
+          - action: input_boolean.turn_on
             target:
               entity_id: input_boolean.evse_automatic_pause
 
           - action: notify.mobile_app_pixel_10_pro
             data:
-              title: "EV Charging Override"
+              title: EV Charging Paused
               message: >
-                Emporia EVSE was turned on manually.
-                Automatic pause state cleared.
-                ComEd: ${{ price | round(3) }}/kWh
-                Helios SOC: {{ soc | round(1) }}%
+                Both EVSEs were paused.
+                ComEd 5-min: ${{ fast_price | round(3) }}/kWh.
+                Current hour avg: ${{ hourly_price | round(3) }}/kWh.
+                Helios SOC: {{ soc | round(1) }}%.
+
+          - action: switch.turn_off
+            target:
+              entity_id:
+                - switch.p_base_48a
+                - switch.garage_grizzl_e_charger_charging
+
+      # ============================================================
+      # RESUME
+      #
+      # Check at :06 each hour so the new hour has had time to get
+      # fresh ComEd pricing data.
+      #
+      # Resume only if:
+      #
+      #   the automation previously paused charging
+      #
+      # AND
+      #
+      #   current-hour average < $0.20/kWh
+      # ============================================================
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger.id == 'resume_check'
+                 and auto_paused
+                 and hourly_price < 0.20 }}
+        sequence:
+          # Clear helper first so the resulting EVSE state changes are
+          # not misinterpreted as manual overrides.
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.evse_automatic_pause
+
+          - action: switch.turn_on
+            target:
+              entity_id:
+                - switch.p_base_48a
+                - switch.garage_grizzl_e_charger_charging
+
+          - action: notify.mobile_app_pixel_10_pro
+            data:
+              title: EV Charging Resumed
+              message: >
+                Both EVSEs were enabled after ComEd pricing normalized.
+                ComEd 5-min: ${{ fast_price | round(3) }}/kWh.
+                Current hour avg: ${{ hourly_price | round(3) }}/kWh.
+                Helios SOC: {{ soc | round(1) }}%.
 
 mode: queued
-max: 5
+max: 10
