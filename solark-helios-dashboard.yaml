@@ -199,6 +199,20 @@ views:
             color: amber
             vertical: false
       - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: Battery SOC — Last 24 Hours
+            icon: mdi:battery-clock
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.p_base_state_of_charge
+                name: State of Charge
+            grid_options:
+              columns: 12
+              rows: 3
+      - type: grid
         column_span: 3
         cards:
           - type: heading
@@ -221,22 +235,19 @@ views:
               columns: 36
               rows: auto
       - type: grid
-        column_span: 1
+        column_span: 3
         cards:
           - type: heading
-            heading: Battery SOC — Last 24 Hours
-            icon: mdi:battery-clock
-          - type: history-graph
-            hours_to_show: 24
-            entities:
-              - entity: sensor.p_base_state_of_charge
-                name: State of Charge
+            icon: mdi:clipboard-flow
+            heading: Energy Flow
+            heading_style: title
+          - type: energy-sankey
+            layout: auto
+            group_by_floor: true
+            group_by_area: true
             grid_options:
-              columns: 12
-              rows: 3
-      - type: grid
-        column_span: 3
-        cards: []
+              columns: 36
+              rows: 6
   - title: Energy
     path: energy
     icon: mdi:chart-areaspline
