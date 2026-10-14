@@ -1,24 +1,20 @@
 alias: EV - ComEd Price and Battery SOC Control
 description: >
-  Controls both EVSEs based on ComEd pricing and Helios battery SOC
-  when solar charging mode is disabled.
+  Controls both EVSEs based on ComEd hourly electricity pricing
+  and Helios battery SOC when solar charging mode is disabled.
 
-  Solar charging mode takes priority. While enabled, this automation
-  never changes either EVSE.
+  Solar charging mode takes priority. While enabled, this
+  automation never changes either EVSE.
 
-  Pauses charging when SOC <= 40% and either the hourly price exceeds
-  $0.25/kWh or the 5-minute price exceeds $0.50/kWh.
+  Pauses charging when SOC <= 40% and hourly price > $0.15/kWh.
+  Resumes charging when hourly price < $0.10/kWh.
 
-  Resumes charging when the hourly price falls below $0.20/kWh.
+  Between thresholds, maintains the previous charging state.
 
 triggers:
   - trigger: state
-    entity_id: sensor.comed_fast_price
-    id: fast_price_changed
-
-  - trigger: state
     entity_id: sensor.comed_electricity_price
-    id: hourly_price_changed
+    id: price_changed
 
   - trigger: state
     entity_id: sensor.solark_battery_soc
@@ -39,15 +35,16 @@ triggers:
 conditions:
   - condition: template
     value_template: >
-      {{ is_number(states('sensor.comed_fast_price'))
-         and is_number(states('sensor.comed_electricity_price'))
+      {{ is_number(states('sensor.comed_electricity_price'))
          and is_number(states('sensor.solark_battery_soc')) }}
 
 actions:
   - variables:
-      fast_price: "{{ states('sensor.comed_fast_price') | float }}"
-      hourly_price: "{{ states('sensor.comed_electricity_price') | float }}"
-      soc: "{{ states('sensor.solark_battery_soc') | float }}"
+      hourly_price: >
+        {{ states('sensor.comed_electricity_price') | float }}
+
+      soc: >
+        {{ states('sensor.solark_battery_soc') | float }}
 
       solar_mode: >
         {{ is_state('input_boolean.ev_solar_charging', 'on') }}
@@ -56,14 +53,13 @@ actions:
         {{ is_state('input_boolean.evse_automatic_pause', 'on') }}
 
       price_high: >
-        {{ soc <= 40 and
-           (hourly_price > 0.25 or fast_price > 0.50) }}
+        {{ soc <= 40 and hourly_price > 0.15 }}
 
       price_recovered: >
-        {{ hourly_price < 0.20 }}
+        {{ hourly_price < 0.10 }}
 
-  # Solar mode owns both EVSEs.
-  # Never change EVSE states while solar mode is enabled.
+  # Solar mode owns EVSE control.
+  # Do not modify either EVSE while solar mode is enabled.
 
   - condition: template
     value_template: "{{ not solar_mode }}"
@@ -82,7 +78,6 @@ actions:
           - if:
               - condition: template
                 value_template: "{{ not auto_paused }}"
-
             then:
               - action: input_boolean.turn_on
                 target:
@@ -94,7 +89,6 @@ actions:
                   message: >
                     EV charging suspended due to ComEd pricing.
 
-                    5-min price: ${{ fast_price | round(3) }}/kWh
                     Hourly price: ${{ hourly_price | round(3) }}/kWh
                     Helios SOC: {{ soc | round(1) }}%
 
@@ -136,10 +130,9 @@ actions:
             data:
               title: EV Charging Resumed
               message: >
-                ComEd pricing has normalized.
+                ComEd hourly pricing dropped below $0.10/kWh.
                 Both EVSEs have been enabled.
 
-                5-min price: ${{ fast_price | round(3) }}/kWh
                 Hourly price: ${{ hourly_price | round(3) }}/kWh
                 Helios SOC: {{ soc | round(1) }}%
 
