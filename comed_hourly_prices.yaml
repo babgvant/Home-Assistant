@@ -1,0 +1,88 @@
+# Install as /config/packages/comed_hourly_prices.yaml.
+# Enable packages under your EXISTING homeassistant: section in configuration.yaml:
+# homeassistant:
+#   packages: !include_dir_named packages
+# Check configuration, then restart Home Assistant.
+# Confirm sensor.comed_completed_hourly_price exists before loading the dashboard.
+# Remove this package and the two dashboard series to roll back.
+#
+# ComEd defines its real-time hourly supply price as the arithmetic average
+# of the twelve five-minute prices in that hour. This reconstructs that value
+# from the published API, rather than averaging HA's polled sensor history.
+# Only complete, elapsed hours are included. Missing hours remain chart gaps.
+# Prices exclude delivery, capacity charges, taxes and other bill adjustments.
+# Sources:
+# https://hourlypricing.comed.com/hp-api/
+# https://hourlypricing.comed.com/live-prices/
+
+rest_command:
+  comed_get_hourly_price_history:
+    url: >-
+      https://hourlypricing.comed.com/api?type=5minutefeed&format=json&datestart={{ (now() - timedelta(days=8)).strftime('%Y%m%d0000') }}&dateend={{ now().strftime('%Y%m%d%H%M') }}
+    method: GET
+    timeout: 60
+    headers:
+      Accept: application/json
+
+template:
+  - triggers:
+      - trigger: homeassistant
+        event: start
+      - trigger: time_pattern
+        minutes: '/5'
+        seconds: '30'
+    actions:
+      - action: rest_command.comed_get_hourly_price_history
+        response_variable: comed_history
+        continue_on_error: true
+      - condition: template
+        value_template: >-
+          {{ comed_history is defined and comed_history.status == 200 }}
+      - variables:
+          samples: >-
+            {% set body = comed_history.content %}
+            {{ (body | from_json([])) if body is string else body }}
+      - condition: template
+        value_template: >-
+          {{ samples is sequence and samples is not string
+             and samples is not mapping and samples | count > 0 }}
+      - variables:
+          hourly_prices: >-
+            {% set ns = namespace(rows=[], prices=[]) %}
+            {% set cutoff = (as_timestamp(now()) * 1000) | int %}
+            {% for sample in samples %}
+              {% if sample is mapping and sample.millisUTC is defined
+                    and sample.price is defined and is_number(sample.millisUTC)
+                    and is_number(sample.price) %}
+                {% set t = sample.millisUTC | int %}
+                {% if t % 300000 == 0 %}
+                  {% set h = (t // 3600000) * 3600000 %}
+                  {% set ns.rows = ns.rows + [{'hour': h, 'time': t,
+                      'price': (sample.price | float) / 100}] %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {% for h, rows in ns.rows | groupby('hour') %}
+              {% set unique_rows = rows | unique(attribute='time') | list %}
+              {% if h + 3600000 <= cutoff and unique_rows | count == 12 %}
+                {% set avg = (unique_rows | map(attribute='price') | sum) / 12 %}
+                {% set ns.prices = ns.prices + [{'time': h, 'price': avg}] %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.prices | sort(attribute='time') }}
+      - condition: template
+        value_template: '{{ hourly_prices | count > 0 }}'
+    sensor:
+      - name: ComEd Completed Hourly Price
+        unique_id: comed_completed_hourly_price
+        default_entity_id: sensor.comed_completed_hourly_price
+        unit_of_measurement: USD/kWh
+        icon: mdi:clock-check-outline
+        # No state_class: the state describes the most recent completed hour,
+        # not the active hour. Charts use the timestamped prices attribute.
+        state: '{{ hourly_prices[-1].price }}'
+        attributes:
+          prices: '{{ hourly_prices }}'
+          hour_start: '{{ (hourly_prices[-1].time / 1000) | timestamp_local }}'
+          fetched_at: '{{ now().isoformat() }}'
+          source: ComEd published five-minute prices, averaged per completed hour
