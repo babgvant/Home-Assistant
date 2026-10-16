@@ -95,6 +95,26 @@ views:
       - type: grid
         column_span: 2
         cards:
+          - type: tile
+            entity: switch.p_base_48a
+            features:
+              - type: toggle
+          - type: tile
+            entity: number.p_base_48a_current_limit
+            features:
+              - type: numeric-input
+          - type: tile
+            entity: switch.garage_grizzl_e_charger_charging
+            features:
+              - type: toggle
+          - type: tile
+            entity: number.garage_grizzl_e_charger_current_limit
+            features:
+              - type: numeric-input
+          - type: tile
+            entity: input_boolean.ev_solar_charging
+            features:
+              - type: toggle
           - type: heading
             heading: Discover HELIOS Bank
             icon: mdi:battery-high
