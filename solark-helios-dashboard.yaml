@@ -342,6 +342,22 @@ views:
                     borderColor: '#808080'
                     strokeDashArray: 3
             series:
+              - entity: sensor.comed_completed_hourly_price
+                name: Hourly Supply (Completed)
+                color: '#00bfa5'
+                stroke_width: 3
+                curve: stepline
+                data_generator: |
+                  const hour = 3600000;
+                  const prices = new Map((entity.attributes.prices || [])
+                    .map(p => [Number(p.time), Number(p.price)]));
+                  const stop = Math.min(end.getTime(), Math.floor(Date.now() / hour) * hour);
+                  const points = [];
+                  for (let t = Math.floor(start.getTime() / hour) * hour; t < stop; t += hour) {
+                    const price = prices.has(t) ? prices.get(t) : null;
+                    points.push([t, price], [Math.min(t + hour - 1, stop), price]);
+                  }
+                  return points;
               - entity: sensor.comed_fast_price
                 name: Market Mean
                 color: '#4285f4'
@@ -770,6 +786,22 @@ views:
                     borderColor: '#808080'
                     strokeDashArray: 3
             series:
+              - entity: sensor.comed_completed_hourly_price
+                name: Hourly Supply (Completed)
+                color: '#00bfa5'
+                stroke_width: 3
+                curve: stepline
+                data_generator: |
+                  const hour = 3600000;
+                  const prices = new Map((entity.attributes.prices || [])
+                    .map(p => [Number(p.time), Number(p.price)]));
+                  const stop = Math.min(end.getTime(), Math.floor(Date.now() / hour) * hour);
+                  const points = [];
+                  for (let t = Math.floor(start.getTime() / hour) * hour; t < stop; t += hour) {
+                    const price = prices.has(t) ? prices.get(t) : null;
+                    points.push([t, price], [Math.min(t + hour - 1, stop), price]);
+                  }
+                  return points;
               - entity: sensor.comed_fast_price
                 name: Market Mean
                 color: '#4285f4'
