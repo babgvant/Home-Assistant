@@ -1,12 +1,11 @@
 alias: EV solar surplus charging
 description: >-
-  Solar-only Grizzl-E charging: available watts are the smaller of PV minus
-  non-EV house load, and EV draw plus grid export minus grid imports and battery
-  discharge. Battery charging has priority. Commanded charging power is capped
-  at total PV generation; stop immediately if PV cannot support minimum current
-  or required data is unavailable. Five-minute surplus start/stop delays; adjust
-  each minute and on available-current/PV updates. Solar mode disables Emporia;
-  disabling solar mode restores maximum current and ComEd control.
+  Solar-only Grizzl-E control. Sample EV power once when a new Sol-Ark
+  energy-balance packet arrives, allow its entities to settle, then calculate
+  the budget using that fixed EV sample. Never feed five-second charger changes
+  back into five-minute site measurements. Apply current on each site packet and
+  minute reconciliation; preserve PV power cap, battery/import deductions,
+  five-minute start/stop delays, and ComEd handoff.
 triggers:
   - trigger: state
     entity_id: input_boolean.ev_solar_charging
@@ -47,12 +46,37 @@ triggers:
     event: start
     id: startup
   - trigger: state
-    entity_id:
-      - sensor.ev_solar_available_current
-      - sensor.solark_pv_power
-    to: null
-    id: adjust
+    entity_id: sensor.solark_pv_power
+    attribute: energy_balance
+    id: solar_update
 actions:
+  - if:
+      - condition: trigger
+        id: solar_update
+    then:
+      - variables:
+          ev_sample_w: '{{ [states(''sensor.grizzl_e_charger_power'') | float(0), 0] | max }}'
+      - delay:
+          seconds: 2
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.ev_solar_sampled_ev_power
+        data:
+          value: '{{ [ev_sample_w | float(0), 30000] | min }}'
+      - delay:
+          milliseconds: 250
+  - variables:
+      min_amps: |
+        {{ state_attr(
+           'number.garage_grizzl_e_charger_current_limit', 'min') | int(7) }}
+      max_amps: |
+        {{ state_attr(
+           'number.garage_grizzl_e_charger_current_limit', 'max') | int(32) }}
+      avail_amps: '{{ states(''sensor.ev_solar_available_current'') | int(0) }}'
+      pv_cap_amps: >-
+        {{ ([states('sensor.solark_pv_power') | float(0), 0] | max /
+        ([states('sensor.grizzl_e_charger_voltage') | float(0), 1] | max)) |
+        round(0, 'floor') | int }}
   - choose:
       - conditions:
           - condition: trigger
@@ -119,7 +143,9 @@ actions:
               entity_id: switch.garage_grizzl_e_charger_charging
       - conditions:
           - condition: trigger
-            id: adjust
+            id:
+              - adjust
+              - solar_update
           - condition: state
             entity_id: input_boolean.ev_solar_charging
             state: 'on'
@@ -134,16 +160,4 @@ actions:
               value: >-
                 {{ [[avail_amps | int(0), pv_cap_amps | int(0), max_amps |
                 int(32)] | min, min_amps | int(7)] | max }}
-variables:
-  min_amps: |
-    {{ state_attr(
-       'number.garage_grizzl_e_charger_current_limit', 'min') | int(7) }}
-  max_amps: |
-    {{ state_attr(
-       'number.garage_grizzl_e_charger_current_limit', 'max') | int(32) }}
-  avail_amps: '{{ states(''sensor.ev_solar_available_current'') | int(0) }}'
-  pv_cap_amps: >-
-    {{ ([states('sensor.solark_pv_power') | float(0), 0] | max /
-    ([states('sensor.grizzl_e_charger_voltage') | float(0), 1] | max)) |
-    round(0, 'floor') | int }}
 mode: restart
