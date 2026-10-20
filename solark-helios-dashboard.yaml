@@ -6,6 +6,13 @@ views:
     max_columns: 3
     sections:
       - type: grid
+        column_span: 3
+        cards:
+          - type: energy-date-selection
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
         column_span: 2
         cards:
           - type: heading
@@ -80,18 +87,6 @@ views:
                 icon: mdi:battery-arrow-down
                 color: orange
                 vertical: false
-              - type: tile
-                entity: sensor.global_p_house_smart_load_power
-                name: Smart Load
-                icon: mdi:power-socket-us
-                color: cyan
-                vertical: false
-              - type: tile
-                entity: sensor.global_p_house_generator_power
-                name: Generator
-                icon: mdi:engine
-                color: deep-orange
-                vertical: false
       - type: grid
         column_span: 2
         cards:
@@ -115,6 +110,10 @@ views:
             entity: input_boolean.ev_solar_charging
             features:
               - type: toggle
+          - type: tile
+            entity: sensor.tou_battery_planner_forecast_pv
+          - type: tile
+            entity: sensor.solcast_pv_forecast_forecast_today
           - type: heading
             heading: Discover HELIOS Bank
             icon: mdi:battery-high
@@ -180,14 +179,6 @@ views:
             grid_options:
               columns: 6
               rows: 1
-          - type: markdown
-            content: >-
-              **96 kWh HELIOS bank.** Yellow begins at the **40% operating
-              reserve**. Negative battery power means charging; positive means
-              discharging.
-            grid_options:
-              columns: 12
-              rows: auto
       - type: grid
         column_span: 1
         cards:
@@ -222,24 +213,32 @@ views:
         column_span: 1
         cards:
           - type: heading
-            heading: Battery SOC — Last 24 Hours
+            heading: Battery SOC - Selected Period
             icon: mdi:battery-clock
-          - type: history-graph
-            hours_to_show: 24
+          - type: statistics-graph
+            chart_type: line
+            stat_types:
+              - mean
+            energy_date_selection: true
             entities:
               - entity: sensor.p_base_state_of_charge
                 name: State of Charge
             grid_options:
-              columns: 12
+              columns: full
               rows: 3
+            min_y_axis: 0
+            max_y_axis: 100
       - type: grid
         column_span: 3
         cards:
           - type: heading
-            heading: Power — Last 24 Hours
+            heading: Power - Selected Period
             icon: mdi:chart-line
-          - type: history-graph
-            hours_to_show: 24
+          - type: statistics-graph
+            chart_type: line
+            stat_types:
+              - mean
+            energy_date_selection: true
             entities:
               - entity: sensor.solark_pv_power
                 name: Solar
@@ -249,10 +248,8 @@ views:
                 name: Grid Net
               - entity: sensor.solark_battery_power
                 name: Battery Net
-              - entity: sensor.global_p_house_smart_load_power
-                name: Smart Load
             grid_options:
-              columns: 36
+              columns: full
               rows: auto
       - type: grid
         column_span: 3
@@ -347,16 +344,22 @@ views:
                 color: '#00bfa5'
                 stroke_width: 3
                 curve: stepline
-                data_generator: |
+                data_generator: >
                   const hour = 3600000;
+
                   const prices = new Map((entity.attributes.prices || [])
                     .map(p => [Number(p.time), Number(p.price)]));
-                  const stop = Math.min(end.getTime(), Math.floor(Date.now() / hour) * hour);
+                  const stop = Math.min(end.getTime(), Math.floor(Date.now() /
+                  hour) * hour);
+
                   const points = [];
-                  for (let t = Math.floor(start.getTime() / hour) * hour; t < stop; t += hour) {
+
+                  for (let t = Math.floor(start.getTime() / hour) * hour; t <
+                  stop; t += hour) {
                     const price = prices.has(t) ? prices.get(t) : null;
                     points.push([t, price], [Math.min(t + hour - 1, stop), price]);
                   }
+
                   return points;
               - entity: sensor.comed_fast_price
                 name: Market Mean
@@ -791,16 +794,22 @@ views:
                 color: '#00bfa5'
                 stroke_width: 3
                 curve: stepline
-                data_generator: |
+                data_generator: >
                   const hour = 3600000;
+
                   const prices = new Map((entity.attributes.prices || [])
                     .map(p => [Number(p.time), Number(p.price)]));
-                  const stop = Math.min(end.getTime(), Math.floor(Date.now() / hour) * hour);
+                  const stop = Math.min(end.getTime(), Math.floor(Date.now() /
+                  hour) * hour);
+
                   const points = [];
-                  for (let t = Math.floor(start.getTime() / hour) * hour; t < stop; t += hour) {
+
+                  for (let t = Math.floor(start.getTime() / hour) * hour; t <
+                  stop; t += hour) {
                     const price = prices.has(t) ? prices.get(t) : null;
                     points.push([t, price], [Math.min(t + hour - 1, stop), price]);
                   }
+
                   return points;
               - entity: sensor.comed_fast_price
                 name: Market Mean
