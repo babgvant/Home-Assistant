@@ -1,14 +1,15 @@
 alias: EV solar surplus charging
 description: >-
-  Solar-only shared Grizzl-E and Emporia control. Split the total available
-  current equally between plugged-in vehicles, or allocate all to the sole
-  connected vehicle. Round down to whole amps; cap each EVSE at its own maximum,
-  without reallocating a capped/unused half. Sample the SUM of both EVSE power
-  sensors only on Sol-Ark energy-balance packets, preserving the fixed-sample
-  anti-oscillation design, import/battery deductions and PV cap. Five-minute
-  start/stop dwell for normal surplus changes; disconnects, invalid data, or
-  insufficient per-vehicle PV cap stop immediately. Restore both maximum limits
-  when solar mode is disabled; ComEd automation owns the handoff.
+  Solar-only Grizzl-E and Emporia allocation. One connected vehicle gets the
+  surplus; two get 50/50 when both need charge OR both are complete. If only one
+  is complete, reserve its minimum (Grizzl-E 7 A, Emporia 6 A) and give the
+  remainder to the other. Grizzl-E completion uses Charging Complete. Emporia
+  completion is inferred after Connected, enabled, current limit >=6 A and 0-100
+  W consumption persist five minutes; it clears when these conditions cease.
+  Inferred completion may also represent a vehicle waiting on its own schedule.
+  Round down and respect each EVSE maximum. Preserve sampled total EV power on
+  Sol-Ark balance packets, battery/import deductions, PV cap, five-minute normal
+  start/stop dwell and ComEd handoff.
 triggers:
   - trigger: state
     entity_id: input_boolean.ev_solar_charging
@@ -34,7 +35,7 @@ triggers:
       {{ is_state('input_boolean.ev_solar_charging','on') and
       is_state('switch.garage_grizzl_e_charger_charging','off') and
       (is_state('binary_sensor.grizzl_e_charger_pilot_connected','on')) and
-      (states('sensor.ev_solar_current_per_connected_vehicle') | int(0)) >=
+      (states('sensor.ev_solar_grizzl_allocation') | int(0)) >=
       (state_attr('number.garage_grizzl_e_charger_current_limit','min') |
       int(7)) }}
     for: '00:05:00'
@@ -43,7 +44,7 @@ triggers:
     value_template: >-
       {{ is_state('input_boolean.ev_solar_charging','on') and
       is_state('switch.garage_grizzl_e_charger_charging','on') and
-      (states('sensor.ev_solar_current_per_connected_vehicle') | int(0)) <
+      (states('sensor.ev_solar_grizzl_allocation') | int(0)) <
       (state_attr('number.garage_grizzl_e_charger_current_limit','min') |
       int(7)) }}
     for: '00:05:00'
@@ -53,7 +54,7 @@ triggers:
       {{ is_state('input_boolean.ev_solar_charging','on') and
       is_state('switch.p_base_48a','off') and
       (states('sensor.p_base_48a_status') in ['Connected','Charging']) and
-      (states('sensor.ev_solar_current_per_connected_vehicle') | int(0)) >=
+      (states('sensor.ev_solar_emporia_allocation') | int(0)) >=
       (state_attr('number.p_base_48a_current_limit','min') | int(6)) }}
     for: '00:05:00'
   - trigger: template
@@ -61,14 +62,21 @@ triggers:
     value_template: >-
       {{ is_state('input_boolean.ev_solar_charging','on') and
       is_state('switch.p_base_48a','on') and
-      (states('sensor.ev_solar_current_per_connected_vehicle') | int(0)) <
+      (states('sensor.ev_solar_emporia_allocation') | int(0)) <
       (state_attr('number.p_base_48a_current_limit','min') | int(6)) }}
     for: '00:05:00'
   - trigger: state
     entity_id:
       - binary_sensor.grizzl_e_charger_pilot_connected
       - sensor.p_base_48a_status
+      - sensor.grizzl_e_charger_state
+      - binary_sensor.ev_solar_emporia_inferred_complete
     id: connection_changed
+  - trigger: state
+    entity_id:
+      - sensor.ev_solar_grizzl_allocation
+      - sensor.ev_solar_emporia_allocation
+    id: allocation_changed
 actions:
   - if:
       - condition: trigger
@@ -92,7 +100,6 @@ actions:
         {{ (is_state('binary_sensor.grizzl_e_charger_pilot_connected','on') |
         int) + ((states('sensor.p_base_48a_status') in ['Connected','Charging'])
         | int) }}
-      share_amps: '{{ states(''sensor.ev_solar_current_per_connected_vehicle'') | int(0) }}'
       pv_share_amps: >-
         {{ (([states('sensor.solark_pv_power') | float(0), 0] | max /
         ([states('sensor.grizzl_e_charger_voltage') | float(0), 1] | max)) /
@@ -105,6 +112,8 @@ actions:
         int(80) }}
       emporia_min: '{{ state_attr(''number.p_base_48a_current_limit'',''min'') | int(6) }}'
       emporia_max: '{{ state_attr(''number.p_base_48a_current_limit'',''max'') | int(48) }}'
+      grizzl_amps: '{{ states(''sensor.ev_solar_grizzl_allocation'') | int(0) }}'
+      emporia_amps: '{{ states(''sensor.ev_solar_emporia_allocation'') | int(0) }}'
   - if:
       - condition: trigger
         id: disabled
@@ -137,6 +146,44 @@ actions:
       - stop: >-
           Reset both chargers; start after five minutes of sufficient allocated
           surplus.
+  - alias: Keep completed Grizzl-E at its minimum pilot current
+    if:
+      - condition: state
+        entity_id: binary_sensor.grizzl_e_charger_pilot_connected
+        state: 'on'
+      - condition: state
+        entity_id: sensor.grizzl_e_charger_state
+        state: Charging Complete
+      - condition: state
+        entity_id: binary_sensor.ev_solar_emporia_inferred_complete
+        state: 'off'
+    then:
+      - action: number.set_value
+        target:
+          entity_id: number.garage_grizzl_e_charger_current_limit
+        data:
+          value: '{{ grizzl_min | int }}'
+  - alias: Keep solely completed Emporia at its minimum pilot current
+    if:
+      - condition: state
+        entity_id: binary_sensor.ev_solar_emporia_inferred_complete
+        state: 'on'
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.grizzl_e_charger_pilot_connected
+            state: 'off'
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: sensor.grizzl_e_charger_state
+                state: Charging Complete
+    then:
+      - action: number.set_value
+        target:
+          entity_id: number.p_base_48a_current_limit
+        data:
+          value: '{{ emporia_min | int }}'
   - alias: Reconcile grizzl before starting either charger
     choose:
       - conditions:
@@ -148,7 +195,7 @@ actions:
                     entity_id: binary_sensor.grizzl_e_charger_pilot_connected
                     state: 'on'
               - condition: state
-                entity_id: sensor.ev_solar_current_per_connected_vehicle
+                entity_id: sensor.ev_solar_grizzl_allocation
                 state:
                   - unavailable
                   - unknown
@@ -168,7 +215,7 @@ actions:
                   - condition: not
                     conditions:
                       - condition: numeric_state
-                        entity_id: sensor.ev_solar_current_per_connected_vehicle
+                        entity_id: sensor.ev_solar_grizzl_allocation
                         above: 6
         sequence:
           - if:
@@ -189,7 +236,7 @@ actions:
               entity_id: number.garage_grizzl_e_charger_current_limit
             data:
               value: >-
-                {{ [[share_amps | int(0), grizzl_max | int] | min, grizzl_min |
+                {{ [[grizzl_amps | int(0), grizzl_max | int] | min, grizzl_min |
                 int] | max }}
   - alias: Reconcile emporia before starting either charger
     choose:
@@ -204,7 +251,7 @@ actions:
                       - Connected
                       - Charging
               - condition: state
-                entity_id: sensor.ev_solar_current_per_connected_vehicle
+                entity_id: sensor.ev_solar_emporia_allocation
                 state:
                   - unavailable
                   - unknown
@@ -224,7 +271,7 @@ actions:
                   - condition: not
                     conditions:
                       - condition: numeric_state
-                        entity_id: sensor.ev_solar_current_per_connected_vehicle
+                        entity_id: sensor.ev_solar_emporia_allocation
                         above: 5
         sequence:
           - if:
@@ -245,8 +292,8 @@ actions:
               entity_id: number.p_base_48a_current_limit
             data:
               value: >-
-                {{ [[share_amps | int(0), emporia_max | int] | min, emporia_min
-                | int] | max }}
+                {{ [[emporia_amps | int(0), emporia_max | int] | min,
+                emporia_min | int] | max }}
   - if:
       - condition: trigger
         id: start_grizzl
@@ -257,14 +304,14 @@ actions:
         entity_id: switch.garage_grizzl_e_charger_charging
         state: 'off'
       - condition: numeric_state
-        entity_id: sensor.ev_solar_current_per_connected_vehicle
+        entity_id: sensor.ev_solar_grizzl_allocation
         above: 6
     then:
       - action: number.set_value
         target:
           entity_id: number.garage_grizzl_e_charger_current_limit
         data:
-          value: '{{ [share_amps | int(0), grizzl_max | int] | min }}'
+          value: '{{ [grizzl_amps | int(0), grizzl_max | int] | min }}'
       - action: switch.turn_on
         target:
           entity_id: switch.garage_grizzl_e_charger_charging
@@ -280,14 +327,14 @@ actions:
         entity_id: switch.p_base_48a
         state: 'off'
       - condition: numeric_state
-        entity_id: sensor.ev_solar_current_per_connected_vehicle
+        entity_id: sensor.ev_solar_emporia_allocation
         above: 5
     then:
       - action: number.set_value
         target:
           entity_id: number.p_base_48a_current_limit
         data:
-          value: '{{ [share_amps | int(0), emporia_max | int] | min }}'
+          value: '{{ [emporia_amps | int(0), emporia_max | int] | min }}'
       - action: switch.turn_on
         target:
           entity_id: switch.p_base_48a
